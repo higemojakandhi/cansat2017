@@ -10,13 +10,10 @@
 #include <string.h>
 #include "Arduino.h"
 #include "motor.h"
-
-int MOTOR_PIN = 8;
-int FIN_PIN = 40;
-int RIN_PIN = 30;
+#include "cansat.h"
 
 // ここでCanSat 全部初期化したいな
-Motor mymotor(MOTOR_PIN, FIN_PIN, RIN_PIN);
+Cansat cansat;
 void setup() {
   Serial.begin(9600);
   Serial.println("Begin!");
@@ -60,6 +57,7 @@ void loop() {
   Serial.println(mymotor.getMotorPin());
   *
   */
+  cansat.motor->goStraight();
 
   /** state判定
   *

@@ -8,11 +8,17 @@
 #define _CANSAT_H_
 // #include <vector>
 // #include "~~.h"
+#include "motor.h"
+
+#define MOTOR_PIN 8
+#define FIN_PIN 40
+#define RIN_PIN  30
 
 class Cansat {
 public:
   Cansat();
   ~Cansat();
+  Motor* motor;
 
 private:
   void clear();

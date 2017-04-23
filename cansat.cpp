@@ -11,6 +11,7 @@
 #include "cansat.h"
 
 Cansat::Cansat(){
+  motor = new Motor(MOTOR_PIN, FIN_PIN, RIN_PIN);
 }
 
 Cansat::~Cansat(){
@@ -18,4 +19,6 @@ Cansat::~Cansat(){
 }
 
 void Cansat::clear(){
+  delete motor;
+  motor = NULL;
 }
