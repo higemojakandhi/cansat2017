@@ -1,8 +1,8 @@
 /**
 * @file cansat.cpp
 * @author Kandai Watanabe
-* @date Created: 20170420
-* @date Modified: 20170420
+* @date Created: 20170423
+* @date Modified: 20170423
 */
 
 #include <stdio.h>

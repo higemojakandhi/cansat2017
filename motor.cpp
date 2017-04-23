@@ -1,5 +1,5 @@
 /**
-* @file Motor.cpp
+* @file motor.cpp
 * @author Kandai Watanabe
 * @date Created: 20170420
 * @date Modified: 20170420
