@@ -2,7 +2,6 @@
 * @file motor.cpp
 * @author Kandai Watanabe
 * @date Created: 20170420
-* @date Modified: 20170420
 */
 
 #include <stdio.h>
@@ -45,7 +44,7 @@ void Motor::turnRight(){
 }
 
 void Motor::stop(){
-  
+
 }
 
 int Motor::getMotorPin(){
@@ -59,3 +58,5 @@ int Motor::getFinPin(){
 int Motor::getRinPin(){
   return _rinPin;
 }
+
+
