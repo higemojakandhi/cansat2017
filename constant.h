@@ -11,5 +11,6 @@
 #define FIN_PIN 40
 #define RIN_PIN  30
 #define RESET_PIN 4
+#define LIGHT_PIN A0
 
 #endif
