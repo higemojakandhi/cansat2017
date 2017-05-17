@@ -74,6 +74,9 @@ void loop() {
   cansat.motor->goStraight();
   time = millis();
   Serial.println(time);
+
+  cansat.light.readLightValue();
+  Serial.print("Light Value: "); Serial.println(cansat.light.getLightValue());
   /** state判定
 
   */
