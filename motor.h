@@ -1,13 +1,13 @@
 /**
-* @file Motor.h
+* @file motor.h
 * @author Kandai Watanabe
-* @date Created: 20170420
-* @date Modified: 20170420
+* @date Created: 20170421
 */
 #ifndef _MOTOR_H_
 #define _MOTOR_H_
-// #include <vector>
-// #include "~~.h"
+#include <stdio.h>
+#include <string.h>
+#include "Arduino.h"
 
 class Motor {
 public:
@@ -24,7 +24,7 @@ public:
 
 private:
   void clear();
-  
+
   int _motorPin;
   int _finPin;
   int _rinPin;

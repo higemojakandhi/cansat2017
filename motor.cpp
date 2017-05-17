@@ -2,12 +2,7 @@
 * @file motor.cpp
 * @author Kandai Watanabe
 * @date Created: 20170420
-* @date Modified: 20170420
 */
-
-#include <stdio.h>
-#include <string.h>
-#include "Arduino.h"
 #include "motor.h"
 
 Motor::Motor(int motorPin, int finPin, int rinPin){
@@ -45,7 +40,7 @@ void Motor::turnRight(){
 }
 
 void Motor::stop(){
-  
+
 }
 
 int Motor::getMotorPin(){
