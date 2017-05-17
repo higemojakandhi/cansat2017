@@ -3,47 +3,45 @@
 * @author Kandai Watanabe
 * @date Created: 20170506
 */
-
-#include <stdio.h>
-#include <string.h>
-#include "Arduino.h"
 #include "openlog.h"
-#include <HardwareSerial.h>
 
-//HardwareSerial & OpenLog = Serial1;
-
-Openlog::Openlog(int resetPin){
+OpenLog::OpenLog(int resetPin){
+  _serial = NULL;
   _resetPin = resetPin;
   pinMode(_resetPin, OUTPUT);
-  initOpenlog();
 }
 
-Openlog::~Openlog(){
+OpenLog::~OpenLog(){
   clear();
 }
 
-void Openlog::clear(){
+void OpenLog::clear(){
 }
 
-void Openlog::initOpenlog(){
-  Serial1.begin(9600);
-  delay(1000);
+void OpenLog::init(HardwareSerial* serial, Cansat* cansat){
+  _serial = serial;
+  _cansat = cansat;
+  _init();
+}
 
+void OpenLog::_init(){
   digitalWrite(_resetPin, LOW);
   delay(100);
   digitalWrite(_resetPin, HIGH);
+  delay(3000);
 
-  Serial.println("start reading...");
+  Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");
   while(1){
-    if(Serial1.available()){
-      Serial.println("in while loop");
-      if(Serial.read() == '<'){
+    if(_serial->available()){
+      if(_serial->read() == '<'){
         break;
       }
+    }else{
+      Serial.println("serial not available"); _serial->println("serial not available");
     }
   }
 }
 
-void Openlog::saveDataOnSD(){
-  Serial1.println("Please Log What You Want to Save ...");
+void OpenLog::saveDataOnSD(unsigned long t){
+  _serial->println(t);
 }

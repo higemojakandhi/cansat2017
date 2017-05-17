@@ -8,21 +8,29 @@
 #include <stdio.h>
 #include <string.h>
 #include "Arduino.h"
+#include <HardwareSerial.h>
+#include <Time.h>
+#include <TimeLib.h>
+
+#include "constant.h" //ALL CONSANTS ARE HERE!!! ex) Pin Number
 #include "motor.h"
 #include "openlog.h"
 #include "cansat.h"
+HardwareSerial & SerialOpenLog = Serial1;
 
-int count = 0;
+unsigned long time;
 Cansat cansat;
-// このスコープでglobal objectのcansatを生成
-// そうすればsetup()でもloop()でも使用できるので
-// Serialの場合はsetupでinitしてあげる．constructorは？ポインターは定義しておいて，NULLを指しておけば大丈夫．intは0とか．
-// &addressで渡せば下位のscopeまで使える．例えばSerial
+OpenLog openlog(RESET_PIN);
+
 void setup() {
   Serial.begin(9600);
-  Serial1.begin(9600);
+  delay(500);
   Serial.println("Begin!");
+
+  SerialOpenLog.begin(9600);
+
   cansat.init();
+  openlog.init(&SerialOpenLog, &cansat);
 }
 
 void loop() {
@@ -64,8 +72,8 @@ void loop() {
 
   */
   cansat.motor->goStraight();
-  count += 1;
-  Serial.println(count);
+  time = millis();
+  Serial.println(time);
   /** state判定
 
   */
@@ -81,5 +89,5 @@ void loop() {
     全て処理が終わったらループの最後にSDにデータの記録
     OpenLog.saveAllData();
   */
-  //  cansat.openlog->saveDataOnSD();
+   openlog.saveDataOnSD(time);
 }

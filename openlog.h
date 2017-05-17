@@ -5,20 +5,26 @@
 */
 #ifndef _OPENLOG_H_
 #define _OPENLOG_H_
+#include <stdio.h>
+#include <string.h>
+#include "Arduino.h"
+#include <HardwareSerial.h>
+#include "cansat.h"
 
-class Openlog {
+class OpenLog {
 public:
-  Openlog(int resetPin);
-  ~Openlog();
-  void saveDataOnSD();
-  void initOpenlog();
+  OpenLog(int resetPin);
+  ~OpenLog();
+  void init(HardwareSerial* serial, Cansat* cansat);
+  void saveDataOnSD(unsigned long t);
 
 private:
   void clear();
-
+  void _init();
+  
+  HardwareSerial* _serial;
+  Cansat* _cansat;
   int _resetPin;
 };
 
 #endif
-
-

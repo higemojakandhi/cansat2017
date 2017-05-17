@@ -3,10 +3,6 @@
 * @author Kandai Watanabe
 * @date Created: 20170420
 */
-
-#include <stdio.h>
-#include <string.h>
-#include "Arduino.h"
 #include "motor.h"
 
 Motor::Motor(int motorPin, int finPin, int rinPin){
@@ -58,5 +54,3 @@ int Motor::getFinPin(){
 int Motor::getRinPin(){
   return _rinPin;
 }
-
-

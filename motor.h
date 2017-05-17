@@ -5,6 +5,9 @@
 */
 #ifndef _MOTOR_H_
 #define _MOTOR_H_
+#include <stdio.h>
+#include <string.h>
+#include "Arduino.h"
 
 class Motor {
 public:
@@ -28,5 +31,3 @@ private:
 };
 
 #endif
-
-
