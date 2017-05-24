@@ -15,22 +15,27 @@
 #include "constant.h" //ALL CONSANTS ARE HERE!!! ex) Pin Number
 #include "motor.h"
 #include "openlog.h"
+#include "gps.h"
 #include "cansat.h"
-HardwareSerial & SerialOpenLog = Serial1;
+HardwareSerial & SerialGps = Serial1;// Change the name of Serial from Serial1 -> SerialGps
+HardwareSerial & SerialOpenLog = Serial2; // Change the name of Serial from Serial2 -> SerialOpenlog
 
 unsigned long time;
 Cansat cansat;
-OpenLog openlog(RESET_PIN);
+//OpenLog openlog(RESET_PIN);
+Gps gps;
 
 void setup() {
   Serial.begin(9600);
   delay(500);
   Serial.println("Begin!");
 
-  SerialOpenLog.begin(9600);
+//  SerialOpenLog.begin(9600);
+  SerialGps.begin(9600);
 
   cansat.init();
-  openlog.init(&SerialOpenLog, &cansat);
+//  openlog.init(&SerialOpenLog, &cansat);
+  gps.init(&SerialGps);
 }
 
 void loop() {
@@ -77,8 +82,10 @@ void loop() {
 
   cansat.light.readLightValue();
   Serial.print("Light Value: "); Serial.println(cansat.light.getLightValue());
-  /** state判定
 
+  gps.readGpsValue();
+  gps.showGpsValue();
+  /** state判定
   */
 
   /** LED点滅
@@ -92,5 +99,5 @@ void loop() {
     全て処理が終わったらループの最後にSDにデータの記録
     OpenLog.saveAllData();
   */
-   openlog.saveDataOnSD(time);
+//   openlog.saveDataOnSD(time);
 }

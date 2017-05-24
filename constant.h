@@ -13,4 +13,7 @@
 #define RESET_PIN 4
 #define LIGHT_PIN A0
 
+#define PIN_GPS_RX 19
+#define PIN_GPS_TX 18
+
 #endif
