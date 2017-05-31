@@ -9,22 +9,18 @@
 #include <string.h>
 #include "Arduino.h"
 #include <HardwareSerial.h>
-#include "cansat.h"
 
 class OpenLog {
 public:
-  OpenLog(int resetPin);
+  OpenLog(int pinOpenLogReset);
   ~OpenLog();
-  void init(HardwareSerial* serial, Cansat* cansat);
+  void setSerial(HardwareSerial* serial);
   void saveDataOnSD(unsigned long t);
 
-private:
-  void clear();
-  void _init();
-  
+  void init();
+
   HardwareSerial* _serial;
-  Cansat* _cansat;
-  int _resetPin;
+  int _pinOpenLogReset;
 };
 
 #endif

@@ -11,18 +11,27 @@
 #include "constant.h" //ALL CONSANTS ARE HERE!!! ex) Pin Number
 #include "motor.h"
 #include "light.h"
-
+#include "gps.h"
+#include "nineaxis.h"
+#include "openlog.h"
 
 class Cansat {
 public:
+  // Initialization (Constructor and Destructor)
   Cansat();
   ~Cansat();
-  void init();
-  Motor* motor;
-  Light light = Light(LIGHT_PIN);
+  void setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
 
-private:
-  void clear();
+  // Objects
+  Motor motor = Motor(PIN_MOTOR, PIN_MOTOR_FIN, PIN_MOTOR_RIN);
+  Light light = Light(PIN_LIGHT);
+  Gps gps;
+  NineAxis nineaxis;
+  OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
+
+  // Variables to save
+
+  // Functions
 };
 
 #endif

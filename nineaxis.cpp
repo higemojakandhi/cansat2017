@@ -22,14 +22,28 @@ void NineAxis::init(){
 
 void NineAxis::readNineAxisValue(){
   fabo_9axis.readAccelXYZ(&_ax,&_ay,&_az);
+  convertAccel(&_ax, &_ay, &_az);
   fabo_9axis.readGyroXYZ(&_gx,&_gy,&_gz);
   fabo_9axis.readMagnetXYZ(&_mx,&_my,&_mz);
   fabo_9axis.readTemperature(&_temp);
-  _deg = atan2(_my,_mx)*180/PI;
+  _deg = calcDegree(_my, _mx);
 }
 
 void NineAxis::showNineAxisValue(){
 
   Serial.print("Digital Compass Angle [deg] ");
   Serial.println(_deg);
+}
+
+
+float NineAxis::calcDegree(float a, float b){
+  float result;
+  result = atan2(a,b)*180/PI;
+  return result;
+}
+
+void NineAxis::convertAccel(float* x, float* y, float* z){
+  *x = (*x)*9.8;
+  *y = (*y)*9.8;
+  *z = (*z)*9.8;
 }

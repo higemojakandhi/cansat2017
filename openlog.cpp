@@ -5,29 +5,24 @@
 */
 #include "openlog.h"
 
-OpenLog::OpenLog(int resetPin){
+OpenLog::OpenLog(int pinOpenLogReset){
   _serial = NULL;
-  _resetPin = resetPin;
-  pinMode(_resetPin, OUTPUT);
+  _pinOpenLogReset = pinOpenLogReset;
+  pinMode(_pinOpenLogReset, OUTPUT);
 }
 
 OpenLog::~OpenLog(){
-  clear();
 }
 
-void OpenLog::clear(){
-}
-
-void OpenLog::init(HardwareSerial* serial, Cansat* cansat){
+void OpenLog::setSerial(HardwareSerial* serial){
   _serial = serial;
-  _cansat = cansat;
-  _init();
+  init();
 }
 
-void OpenLog::_init(){
-  digitalWrite(_resetPin, LOW);
+void OpenLog::init(){
+  digitalWrite(_pinOpenLogReset, LOW);
   delay(100);
-  digitalWrite(_resetPin, HIGH);
+  digitalWrite(_pinOpenLogReset, HIGH);
   delay(3000);
 
   Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");

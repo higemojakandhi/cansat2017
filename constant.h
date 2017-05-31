@@ -7,12 +7,10 @@
 #ifndef _CONSTANT_H_
 #define _CONSTANT_H_
 
-#define MOTOR_PIN 8
-#define FIN_PIN 40
-#define RIN_PIN  30
-#define RESET_PIN 4
-#define LIGHT_PIN A0
-
+#define PIN_MOTOR 8
+#define PIN_MOTOR_FIN 40
+#define PIN_MOTOR_RIN  30
+#define PIN_LIGHT A0
 #define PIN_GPS_RX 19
 #define PIN_GPS_TX 18
 

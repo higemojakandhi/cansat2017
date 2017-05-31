@@ -6,18 +6,13 @@
 #include "cansat.h"
 
 Cansat::Cansat(){
-  motor = new Motor(MOTOR_PIN, FIN_PIN, RIN_PIN);
 }
 
 Cansat::~Cansat(){
-  clear();
 }
 
-void Cansat::clear(){
-  delete motor;
-  motor = NULL;
-}
-
-void Cansat::init(){
-
+void Cansat::setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio){
+  gps.setSerial(serialgps);
+  openlog.setSerial(serialopenlog);
+//  radio.setSerial(serialradio);
 }

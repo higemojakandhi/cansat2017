@@ -11,7 +11,8 @@ Gps::Gps(){
 Gps::~Gps(){
 }
 
-void Gps::init(HardwareSerial* serial){
+void Gps::setSerial(HardwareSerial* serial){
+  _serial = NULL;
   _serial = serial;
 }
 

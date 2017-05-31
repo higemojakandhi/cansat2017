@@ -21,15 +21,16 @@ public:
   void init();
   void readNineAxisValue();
   void showNineAxisValue();
+  float calcDegree(float a, float b);
+  void convertAccel(float* x, float* y, float* z);
 
-private:
+  FaBo9Axis fabo_9axis;
   int _pinNineAxis;
   float _ax, _ay, _az;
   float _gx, _gy, _gz;
   float _mx, _my, _mz;
   float _temp;
   float _deg;
-  FaBo9Axis fabo_9axis;
 };
 
 #endif

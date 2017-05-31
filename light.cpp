@@ -5,9 +5,9 @@
 */
 #include "light.h"
 
-Light::Light(int lightPin){
-  _lightPin = lightPin;
-  pinMode(_lightPin, INPUT);
+Light::Light(int pinLight){
+  _pinLight = pinLight;
+  pinMode(_pinLight, INPUT);
 }
 
 Light::~Light(){
@@ -18,7 +18,7 @@ Light::~Light(){
 * @brief read Light Sensor Value and save it
 */
 void Light::readLightValue(){
-  _lightValue = analogRead(_lightPin);
+  _lightValue = analogRead(_pinLight);
   // need some function to save its value
 }
 

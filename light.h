@@ -11,14 +11,13 @@
 
 class Light {
 public:
-  Light(int lightPin);
+  Light(int pinLight);
   ~Light();
   void readLightValue();
   int getLightValue();
 
-private:
   int _lightValue;
-  int _lightPin;
+  int _pinLight;
 };
 
 #endif
