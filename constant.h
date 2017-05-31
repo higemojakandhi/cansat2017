@@ -10,6 +10,7 @@
 #define PIN_MOTOR 8
 #define PIN_MOTOR_FIN 40
 #define PIN_MOTOR_RIN  30
+#define PIN_OPENLOG_RESET 22
 #define PIN_LIGHT A0
 #define PIN_GPS_RX 19
 #define PIN_GPS_TX 18

@@ -4,38 +4,30 @@
   @author Kandai Watanabe
   @date Created: 20170420
 */
-
 #include <stdio.h>
 #include <string.h>
 #include "Arduino.h"
 #include <HardwareSerial.h>
+#include "constant.h" //ALL CONSANTS ARE HERE!!! ex) Pin Number
 #include <Time.h>
 #include <TimeLib.h>
-
-#include "constant.h" //ALL CONSANTS ARE HERE!!! ex) Pin Number
-#include "motor.h"
-#include "openlog.h"
-#include "gps.h"
 #include "cansat.h"
 HardwareSerial & SerialGps = Serial1;// Change the name of Serial from Serial1 -> SerialGps
 HardwareSerial & SerialOpenLog = Serial2; // Change the name of Serial from Serial2 -> SerialOpenlog
+HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial3 -> SerialRadio
 
 unsigned long time;
 Cansat cansat;
-//OpenLog openlog(RESET_PIN);
-Gps gps;
 
 void setup() {
   Serial.begin(9600);
-  delay(500);
-  Serial.println("Begin!");
-
-//  SerialOpenLog.begin(9600);
+  delay(500);         Serial.println("Begin!");
+  
   SerialGps.begin(9600);
+  SerialOpenLog.begin(9600);
 
-  cansat.init();
-//  openlog.init(&SerialOpenLog, &cansat);
-  gps.init(&SerialGps);
+  cansat.setSerial(&SerialGps, &SerialOpenLog, &SerialRadio);
+  Serial.println("All Set!");
 }
 
 void loop() {
@@ -71,20 +63,16 @@ void loop() {
   */
 
   /** やるべきことやる
-
-    mymotor.goStraight();
-    Serial.println(mymotor.getMotorPin());
-
   */
-  cansat.motor->goStraight();
+  
   time = millis();
   Serial.println(time);
-
-  cansat.light.readLightValue();
-  Serial.print("Light Value: "); Serial.println(cansat.light.getLightValue());
-
-  gps.readGpsValue();
-  gps.showGpsValue();
+  
+//  cansat.light.readLightValue();
+//  Serial.print("Light Value: "); Serial.println(cansat.light.getLightValue());
+//
+//  cansat.gps.readGpsValue();
+//  cansat.gps.showGpsValue();
   /** state判定
   */
 
@@ -95,9 +83,6 @@ void loop() {
   // -------------------------------------------------------------------------
   // sequenceごと終了
 
-  /**
-    全て処理が終わったらループの最後にSDにデータの記録
-    OpenLog.saveAllData();
-  */
-//   openlog.saveDataOnSD(time);
+  // 全て処理が終わったらループの最後にSDにデータの記録
+  cansat.openlog.saveDataOnSD(time);
 }
