@@ -9,20 +9,18 @@
 #include "Arduino.h"
 #include <HardwareSerial.h>
 #include "constant.h" //ALL CONSANTS ARE HERE!!! ex) Pin Number
-#include <Time.h>
-#include <TimeLib.h>
 #include "cansat.h"
 HardwareSerial & SerialGps = Serial1;// Change the name of Serial from Serial1 -> SerialGps
 HardwareSerial & SerialOpenLog = Serial2; // Change the name of Serial from Serial2 -> SerialOpenlog
 HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial3 -> SerialRadio
 
-unsigned long time;
 Cansat cansat;
+int i=0;
 
 void setup() {
   Serial.begin(9600);
   delay(500);         Serial.println("Begin!");
-  
+
   SerialGps.begin(9600);
   SerialOpenLog.begin(9600);
 
@@ -64,10 +62,7 @@ void loop() {
 
   /** やるべきことやる
   */
-  
-  time = millis();
-  Serial.println(time);
-  
+
 //  cansat.light.readLightValue();
 //  Serial.print("Light Value: "); Serial.println(cansat.light.getLightValue());
 //
@@ -82,7 +77,11 @@ void loop() {
 
   // -------------------------------------------------------------------------
   // sequenceごと終了
+  if(i==255) i=0;
+  cansat.rightMotor.goStraight(i);
+  cansat.leftMotor.goStraight(i);
 
   // 全て処理が終わったらループの最後にSDにデータの記録
-  cansat.openlog.saveDataOnSD(time);
+  cansat.openlog.saveDataOnSD(i);
+  i++;
 }

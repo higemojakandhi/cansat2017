@@ -37,6 +37,6 @@ void OpenLog::init(){
   }
 }
 
-void OpenLog::saveDataOnSD(unsigned long t){
-  _serial->println(t);
+void OpenLog::saveDataOnSD(int i){
+  _serial->println(i);
 }

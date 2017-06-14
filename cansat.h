@@ -23,11 +23,12 @@ public:
   void setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
 
   // Objects
-  Motor motor = Motor(PIN_MOTOR, PIN_MOTOR_FIN, PIN_MOTOR_RIN);
+  Motor leftMotor = Motor(PIN_LEFT_MOTOR_VREF, PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
+  Motor rightMotor = Motor(PIN_RIGHT_MOTOR_VREF, PIN_RIGHT_MOTOR_FIN, PIN_RIGHT_MOTOR_RIN);
   Light light = Light(PIN_LIGHT);
+  OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
   Gps gps;
   NineAxis nineaxis;
-  OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
 
   // Variables to save
 

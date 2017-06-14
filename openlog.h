@@ -15,7 +15,7 @@ public:
   OpenLog(int pinOpenLogReset);
   ~OpenLog();
   void setSerial(HardwareSerial* serial);
-  void saveDataOnSD(unsigned long t);
+  void saveDataOnSD(int i);
 
   void init();
 

@@ -12,7 +12,6 @@ Gps::~Gps(){
 }
 
 void Gps::setSerial(HardwareSerial* serial){
-  _serial = NULL;
   _serial = serial;
 }
 
