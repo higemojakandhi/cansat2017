@@ -15,8 +15,7 @@ public:
   ~Gps();
   void setSerial(HardwareSerial* serial);
   void readGpsValue();
-  void saveGpsValue();
-  void showGpsValue();
+  void printGpsValue();
 
   HardwareSerial* _serial;
   float _time;

@@ -20,6 +20,16 @@ void Cansat::init(HardwareSerial* serialgps, HardwareSerial* serialopenlog, Hard
 //  radio.setSerial(serialradio);
 }
 
+void Cansat::readSensorValues(){
+  if(_state==PREPARING){
+    light.readLightValue();
+  }else{
+    gps.readGpsValue();
+    nineaxis.readNineAxisValue();
+    // xbee.readXbeeValue();
+  }
+}
+
 void Cansat::saveAllData(){
   String alldata = createSaveDataString();
   openlog.saveDataOnSD(alldata);

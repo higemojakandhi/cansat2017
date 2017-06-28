@@ -20,29 +20,57 @@ int i=0;
 
 void setup() {
   Serial.begin(9600);
-  delay(500);         Serial.println("Begin!");
+  delay(500);
+  Serial.println("Begin!");
 
   SerialGps.begin(9600);
   SerialOpenLog.begin(9600);
 
   cansat.init(&SerialGps, &SerialOpenLog, &SerialRadio);
-
   Serial.println("All Set!");
 }
 
 void loop() {
   /**　初期化
-    データの格納庫の初期化
-      openlog.deleteTempData();
-    送信コマンドデータの格納庫の初期化
-      serialcommand.deleteTempData();
     出来ればセンサーのキャリブレーション毎回したい．もしくは数分に１回
       if(ever5min()) sensor.calibrate();
   */
 
-  /* stateは手動でも変更可能
-    state.changeByHand();
+  /** センサーの値を取得
   */
+  cansat.getSensorValues();
+
+  /** cansatの状態(State)に応じて処理を変更
+  */
+    switch (cansat._state) {
+      case PREPARING:
+        cansat.preparing();
+        break;
+      case FLYING:
+        cansat.flying();
+        break;
+      case DROPPING:
+        cansat.dropping();
+        break;
+      case LANDING:
+        cansat.landing();
+        break;
+      case RUNNING:
+        cansat.dropping();
+        break;
+      case IDLING:
+        cansat.idling();
+        break;
+      case STUCK:
+        cansat.stuck();
+        break;
+      case GOAL:
+        cansat.goal();
+        break;
+      default:
+        break;
+    }
+
   // -----------------------------ここからstateごとの処理-------------------------
   /** states
     if(cansat.isState("preparing"))
@@ -79,9 +107,6 @@ void loop() {
 
   // -------------------------------------------------------------------------
   // sequenceごと終了
-  if(i==255) i=0;
-//  cansat.rightMotor.goStraight(i);
-//  cansat.leftMotor.goStraight(i);
 
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.saveAllData();

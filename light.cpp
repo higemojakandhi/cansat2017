@@ -27,6 +27,6 @@ void Light::readLightValue(){
 * @brief return Light Sensor Value
 * @return light Sensor Value
 */
-int Light::getLightValue(){
+int Light::returnLightValue(){
   return _lightValue;
 }

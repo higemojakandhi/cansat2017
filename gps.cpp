@@ -56,10 +56,7 @@ void Gps::readGpsValue(){
   }
 }
 
-void Gps::saveGpsValue(){
-}
-
-void Gps::showGpsValue(){
+void Gps::printGpsValue(){
   Serial.print("Longitude= ");
   Serial.println(_lon);
   Serial.print("Latitude= ");

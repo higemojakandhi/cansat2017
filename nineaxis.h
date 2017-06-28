@@ -20,7 +20,7 @@ public:
   ~NineAxis();
   void init();
   void readNineAxisValue();
-  void showNineAxisValue();
+  void printNineAxisValue();
   float calcDegree(float a, float b);
   void convertAccel(float* x, float* y, float* z);
 

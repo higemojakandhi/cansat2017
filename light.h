@@ -14,7 +14,7 @@ public:
   Light(int pinLight);
   ~Light();
   void readLightValue();
-  int getLightValue();
+  int returnLightValue();
 
   int _lightValue;
   int _pinLight;

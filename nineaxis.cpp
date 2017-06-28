@@ -29,8 +29,7 @@ void NineAxis::readNineAxisValue(){
   _deg = calcDegree(_my, _mx);
 }
 
-void NineAxis::showNineAxisValue(){
-
+void NineAxis::printNineAxisValue(){
   Serial.print("Digital Compass Angle [deg] ");
   Serial.println(_deg);
 }

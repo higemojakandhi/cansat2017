@@ -23,6 +23,7 @@ public:
   void init(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
   String createSaveDataString();
   void saveAllData();
+  void readSensorValues();
 
   // Objects
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_VREF, PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
@@ -34,6 +35,7 @@ public:
 
   // Variables to save
   int _date;
+  int _state;
   // Functions
 };
 
