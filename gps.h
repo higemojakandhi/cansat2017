@@ -22,6 +22,8 @@ public:
   float _time;
   float _lat;
   float _lon;
+  float _satNum;
+  float _posAccuracy;
   char _buf[200];
 };
 

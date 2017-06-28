@@ -14,7 +14,8 @@ HardwareSerial & SerialGps = Serial1;// Change the name of Serial from Serial1 -
 HardwareSerial & SerialOpenLog = Serial2; // Change the name of Serial from Serial2 -> SerialOpenlog
 HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial3 -> SerialRadio
 
-Cansat cansat;
+int date = 100;
+Cansat cansat = Cansat(date);
 int i=0;
 
 void setup() {
@@ -24,7 +25,8 @@ void setup() {
   SerialGps.begin(9600);
   SerialOpenLog.begin(9600);
 
-  cansat.setSerial(&SerialGps, &SerialOpenLog, &SerialRadio);
+  cansat.init(&SerialGps, &SerialOpenLog, &SerialRadio);
+
   Serial.println("All Set!");
 }
 
@@ -78,10 +80,10 @@ void loop() {
   // -------------------------------------------------------------------------
   // sequenceごと終了
   if(i==255) i=0;
-  cansat.rightMotor.goStraight(i);
-  cansat.leftMotor.goStraight(i);
+//  cansat.rightMotor.goStraight(i);
+//  cansat.leftMotor.goStraight(i);
 
   // 全て処理が終わったらループの最後にSDにデータの記録
-  cansat.openlog.saveDataOnSD(i);
+  cansat.saveAllData();
   i++;
 }

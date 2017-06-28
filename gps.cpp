@@ -17,7 +17,7 @@ void Gps::setSerial(HardwareSerial* serial){
 
 void Gps::readGpsValue(){
   int count = 0;
-  float t, latDeg, latMin, lonDeg, lonMin, satNum, posAccuracy, alt, latDegReal, latMinReal, lonDegReal, lonMinReal;
+  float t, latDeg, latMin, lonDeg, lonMin, alt, latDegReal, latMinReal, lonDegReal, lonMinReal;
 
   do {
     if (_serial->available()) {
@@ -42,8 +42,8 @@ void Gps::readGpsValue(){
     lonMin = atof(strtok(NULL, ","));       // 経度の分
     strtok(NULL, ",");       // E or W
     strtok(NULL, ",");
-    satNum = (short)atof(strtok(NULL, ","));     // The number of Satellites
-    posAccuracy = atof(strtok(NULL, ","));// The accuracy of its position
+    _satNum = (short)atof(strtok(NULL, ","));     // The number of Satellites
+    _posAccuracy = atof(strtok(NULL, ","));// The accuracy of its position
     alt = atof(strtok(NULL, ","));     // The height
 
 

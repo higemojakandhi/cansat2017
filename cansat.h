@@ -18,20 +18,22 @@
 class Cansat {
 public:
   // Initialization (Constructor and Destructor)
-  Cansat();
+  Cansat(int date);
   ~Cansat();
-  void setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
+  void init(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
+  String createSaveDataString();
+  void saveAllData();
 
   // Objects
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_VREF, PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
   Motor rightMotor = Motor(PIN_RIGHT_MOTOR_VREF, PIN_RIGHT_MOTOR_FIN, PIN_RIGHT_MOTOR_RIN);
   Light light = Light(PIN_LIGHT);
-  OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
   Gps gps;
   NineAxis nineaxis;
+  OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
 
   // Variables to save
-
+  int _date;
   // Functions
 };
 
