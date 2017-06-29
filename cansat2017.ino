@@ -14,29 +14,35 @@ HardwareSerial & SerialGps = Serial1;// Change the name of Serial from Serial1 -
 HardwareSerial & SerialOpenLog = Serial2; // Change the name of Serial from Serial2 -> SerialOpenlog
 HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial3 -> SerialRadio
 
-int date = 100;
-Cansat cansat = Cansat(date);
-int i=0;
+// cansatオブジェクト生成
+Cansat cansat = Cansat(int date=100);
 
+/** 初期化関数
+*/
 void setup() {
+  // Serial通信開始
   Serial.begin(9600);
   delay(500);
   Serial.println("Begin!");
-
+  // GPS　と OpenLog Serial通信開始
   SerialGps.begin(9600);
   SerialOpenLog.begin(9600);
-
+  // cansatにSerialを渡す & 初期化
   cansat.init(&SerialGps, &SerialOpenLog, &SerialRadio);
   Serial.println("All Set!");
 }
 
+/** ループ関数
+*/
 void loop() {
   /**　初期化
     出来ればセンサーのキャリブレーション毎回したい．もしくは数分に１回
       if(ever5min()) sensor.calibrate();
   */
 
-  /** センサーの値を取得
+  /**　センサー値取得
+    ループでは常にGPSはon, デジコンはendbeginで取得, ライトは pre, fly,dropでon, GYROもon, OpenLogも常にon
+    MU2はPre, Drop, Land, Goalの時だけ送信
   */
   cansat.getSensorValues();
 
@@ -45,24 +51,35 @@ void loop() {
     switch (cansat._state) {
       case PREPARING:
         cansat.preparing();
+        cansat.isPreparing2Flying();
+        // judge
+        // light
         break;
       case FLYING:
         cansat.flying();
+        cansat.isFlying2dropping();
         break;
       case DROPPING:
         cansat.dropping();
+        cansat.isDropping2Landing();
         break;
       case LANDING:
         cansat.landing();
+        cansat.isLanding2Running();
         break;
       case RUNNING:
         cansat.dropping();
+        cansat..isIdling();
+        cansat.isStucking();
+        cansat.isGoal();
         break;
       case IDLING:
         cansat.idling();
+        cansat.isIdling2Running();
         break;
-      case STUCK:
-        cansat.stuck();
+      case STUCKING:
+        cansat.stucking();
+        cansat.isStucking2Running();
         break;
       case GOAL:
         cansat.goal();
@@ -71,44 +88,6 @@ void loop() {
         break;
     }
 
-  // -----------------------------ここからstateごとの処理-------------------------
-  /** states
-    if(cansat.isState("preparing"))
-    else if (cansat.isState("flying"))
-    else if (cansat.isState("dropping"))
-    else if (cansat.isState("landing"))
-    else if (cansat.isState("running"))
-    else if (cansat.isState("idling"))
-    else if (cansat.isState("stuck"))
-    else if (cansat.isState("gaol"))
-    else
-    end
-  */
-
-  /**　センサー値取得
-    ループでは常にGPSはon, デジコンはendbeginで取得, ライトは pre, fly,dropでon, GYROもon, OpenLogも常にon
-    MU2はPre, Drop, Land, Goalの時だけ送信
-  */
-
-  /** やるべきことやる
-  */
-
-//  cansat.light.readLightValue();
-//  Serial.print("Light Value: "); Serial.println(cansat.light.getLightValue());
-//
-//  cansat.gps.readGpsValue();
-//  cansat.gps.showGpsValue();
-  /** state判定
-  */
-
-  /** LED点滅
-    LED.flash"Sequence名"
-  */
-
-  // -------------------------------------------------------------------------
-  // sequenceごと終了
-
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.saveAllData();
-  i++;
 }

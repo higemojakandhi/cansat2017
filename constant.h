@@ -25,7 +25,7 @@
 #define LANDING 3     // ジャイロ加速度センサによる着地検知
 #define RUNNING 4     // 走行中
 #define IDLING 5      // アイドリング
-#define STUCK 6       // スタック中
+#define STUCKING 6       // スタック中
 #define GOAL 7        // ゴール
 
 #endif

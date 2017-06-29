@@ -30,6 +30,15 @@ void Cansat::readSensorValues(){
   }
 }
 
+void Cansat::isPreparing2Flying(){
+  if (io_cansat->state_data == PREPARING && io_cansat->light_data.light_value < PRE2FLY_thre) {
+    if (io_cansat->sequence_data.Count_0to1 > Count_0to1_thre) {
+      _state=FLYING;
+    }
+  }else if()
+}
+
+
 void Cansat::saveAllData(){
   String alldata = createSaveDataString();
   openlog.saveDataOnSD(alldata);
