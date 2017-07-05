@@ -6,6 +6,12 @@
 #include "gps.h"
 
 Gps::Gps(){
+  _serial=NULL;
+  _time=0;
+  _lat=0;
+  _lon=0;
+  _satNum=0;
+  _posAccuracy=0;
 }
 
 Gps::~Gps(){
@@ -17,7 +23,7 @@ void Gps::setSerial(HardwareSerial* serial){
 
 void Gps::readGpsValue(){
   int count = 0;
-  float t, latDeg, latMin, lonDeg, lonMin, alt, latDegReal, latMinReal, lonDegReal, lonMinReal;
+  float latDeg, latMin, lonDeg, lonMin, alt, latDegReal, latMinReal, lonDegReal, lonMinReal;
 
   do {
     if (_serial->available()) {
@@ -34,7 +40,7 @@ void Gps::readGpsValue(){
   /////とりあえず表示だけ
   if (0 == strncmp("$GPGGA", _buf, 6)) { //先頭6文字を比較
     strtok(_buf, ",");
-    t = atof(strtok(NULL, ","));       // UTC時刻の抽出
+    _time = atof(strtok(NULL, ","));       // UTC時刻の抽出
     latDeg = atof(strtok(NULL, "."));        // 緯度の度
     latMin = atof(strtok(NULL, ","));      // 緯度の分
     strtok(NULL, ",");       // N or S

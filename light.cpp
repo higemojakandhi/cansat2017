@@ -8,6 +8,7 @@
 Light::Light(int pinLight){
   _pinLight = pinLight;
   pinMode(_pinLight, INPUT);
+  _lightValue=0;
 }
 
 Light::~Light(){

@@ -6,6 +6,11 @@
 #include "nineaxis.h"
 
 NineAxis::NineAxis(){
+  _ax=_ay=_az=0;
+  _gx=_gy=_gz=0;
+  _mx=_my=_mz=0;
+  _temp=0;
+  _deg=0;
 }
 
 NineAxis::~NineAxis(){

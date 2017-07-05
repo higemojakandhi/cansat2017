@@ -14,7 +14,7 @@ OpenLog::OpenLog(int pinOpenLogReset){
 OpenLog::~OpenLog(){
 }
 
-void OpenLog::init(HardwareSerial* serial, int date){
+void OpenLog::init(HardwareSerial* serial){
   _serial = serial;
   reset();
 

@@ -18,10 +18,10 @@ public:
   void printGpsValue();
 
   HardwareSerial* _serial;
-  float _time;
+  unsigned long _time;
   float _lat;
   float _lon;
-  float _satNum;
+  short _satNum;
   float _posAccuracy;
   char _buf[200];
 };

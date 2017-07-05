@@ -14,7 +14,7 @@ class OpenLog {
 public:
   OpenLog(int pinOpenLogReset);
   ~OpenLog();
-  void init(HardwareSerial* serial, int date);
+  void init(HardwareSerial* serial);
   void saveDataOnSD(String alldata);
 
   void reset();

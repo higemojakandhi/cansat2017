@@ -15,7 +15,7 @@ HardwareSerial & SerialOpenLog = Serial2; // Change the name of Serial from Seri
 HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial3 -> SerialRadio
 
 // cansatオブジェクト生成
-Cansat cansat = Cansat(int date=100);
+Cansat cansat;
 
 /** 初期化関数
 */
@@ -36,48 +36,50 @@ void setup() {
 */
 void loop() {
   /**　初期化
-    出来ればセンサーのキャリブレーション毎回したい．もしくは数分に１回
-      if(ever5min()) sensor.calibrate();
+    出来ればセンサーのキャリブレーション毎回したい．もしくは数ループに１回
   */
 
   /**　センサー値取得
-    ループでは常にGPSはon, デジコンはendbeginで取得, ライトは pre, fly,dropでon, GYROもon, OpenLogも常にon
+    GPS, 9軸は毎ループ
     MU2はPre, Drop, Land, Goalの時だけ送信
+    光センサはPre, Flyingのみ．
   */
-  cansat.getSensorValues();
+  cansat.gps.readGpsValue();
+  cansat.nineaxis.readNineAxisValue();
+
+  // 手動でcansatの状態を切り替える．
+  if(Serial.available()>0){
+    byte inputState = Serial.read();
+    Serial.print(F("\n"));
+    Serial.print(F("I received: "));   // 受信データを送りかえす
+    cansat.switchStateTo(inputState);
+  }
 
   /** cansatの状態(State)に応じて処理を変更
   */
     switch (cansat._state) {
       case PREPARING:
+        cansat.light.readLightValue();
         cansat.preparing();
-        cansat.judgeInCarrier();
         break;
       case FLYING:
+        cansat.light.readLightValue();
         cansat.flying();
-        cansat.judgeOutOfCarrier();
         break;
       case DROPPING:
         cansat.dropping();
-        cansat.judgeLanding();
         break;
       case LANDING:
         cansat.landing();
-        cansat.judgeReleasing();
         break;
       case RUNNING:
         cansat.running();
-        cansat.judgeIdling();
-        cansat.judgeStucking();
-        cansat.judgeGoal();
         break;
       case IDLING:
         cansat.idling();
-        cansat.judgeIdling2Running();
         break;
       case STUCKING:
         cansat.stucking();
-        cansat.judgeStucking2Running();
         break;
       case GOAL:
         cansat.goal();

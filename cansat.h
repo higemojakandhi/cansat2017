@@ -18,33 +18,9 @@
 class Cansat {
 public:
   // Initialization (Constructor and Destructor)
-  Cansat(int date);
+  Cansat();
   ~Cansat();
   void init(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
-
-  // Functions
-  void readSensorValues();
-  void judgeInCarrier();
-  void judgeOutOfCarrier();
-  void judgeLanding();
-  void Releasing();
-  void judgeIdling();
-  void judgeStucking();
-  void judgeGoal();
-  void judgeIdling2Running();
-  void judgeStucking2Running();
-  void preparing();
-  void flying();
-  void dropping();
-  void landing();
-  void running();
-  void idling();
-  void stucking();
-  void goal();
-
-  // Functions for Saving
-  String createSaveDataString();
-  void saveAllData();
 
   // Objects
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_VREF, PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
@@ -54,16 +30,49 @@ public:
   NineAxis nineaxis;
   OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
 
+  // Functions
+  void preparing();
+  void flying();
+  void dropping();
+  void landing();
+  void running();
+  void idling();
+  void stucking();
+  void goal();
+  void judgeIdling2Running();
+  void judgeStucking2Running();
+  int whichWay2Go(float lat, float lon, float deg);
+
+  void judgeIdling();
+  void judgeStucking();
+  void judgeGoal();
+
+  // Functions for Saving
+  String createSaveDataString();
+  void saveAllData();
+
+  // State Switcher
+  void switchStateTo(byte state);
+
   // Variables to save
-  int _date;
   int _state;
-  double _startReleasingTime;
-  double _startRunningTime;
-  double _preGpsPollingTime;
-  double _pre20sGpsLat;
-  double _pre20sGpsLon;
-  double _dest_Lat;
-  double _dest_Lon;
+  unsigned long _startPreparingTime;
+  unsigned long _startFlyingTime;
+  unsigned long _startDroppingTime;
+  unsigned long _startLandingTime;
+  unsigned long _startRunningTime;
+
+  unsigned long _preGpsPollingTime;
+  float _pre20sGpsLat;
+  float _pre20sGpsLon;
+
+  float _destLat;
+  float _destLon;
+
+  int _flagLandingTime;
+
+  int _countPreLightLoop;
+  int _countFlyLightLoop;
 };
 
 #endif
