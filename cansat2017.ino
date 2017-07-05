@@ -51,35 +51,33 @@ void loop() {
     switch (cansat._state) {
       case PREPARING:
         cansat.preparing();
-        cansat.isPreparing2Flying();
-        // judge
-        // light
+        cansat.judgeInCarrier();
         break;
       case FLYING:
         cansat.flying();
-        cansat.isFlying2dropping();
+        cansat.judgeOutOfCarrier();
         break;
       case DROPPING:
         cansat.dropping();
-        cansat.isDropping2Landing();
+        cansat.judgeLanding();
         break;
       case LANDING:
         cansat.landing();
-        cansat.isLanding2Running();
+        cansat.judgeReleasing();
         break;
       case RUNNING:
-        cansat.dropping();
-        cansat..isIdling();
-        cansat.isStucking();
-        cansat.isGoal();
+        cansat.running();
+        cansat.judgeIdling();
+        cansat.judgeStucking();
+        cansat.judgeGoal();
         break;
       case IDLING:
         cansat.idling();
-        cansat.isIdling2Running();
+        cansat.judgeIdling2Running();
         break;
       case STUCKING:
         cansat.stucking();
-        cansat.isStucking2Running();
+        cansat.judgeStucking2Running();
         break;
       case GOAL:
         cansat.goal();
@@ -87,7 +85,6 @@ void loop() {
       default:
         break;
     }
-
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.saveAllData();
 }

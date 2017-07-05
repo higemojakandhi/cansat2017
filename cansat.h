@@ -21,11 +21,30 @@ public:
   Cansat(int date);
   ~Cansat();
   void init(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
+
+  // Functions
+  void readSensorValues();
+  void judgeInCarrier();
+  void judgeOutOfCarrier();
+  void judgeLanding();
+  void Releasing();
+  void judgeIdling();
+  void judgeStucking();
+  void judgeGoal();
+  void judgeIdling2Running();
+  void judgeStucking2Running();
+  void preparing();
+  void flying();
+  void dropping();
+  void landing();
+  void running();
+  void idling();
+  void stucking();
+  void goal();
+
+  // Functions for Saving
   String createSaveDataString();
   void saveAllData();
-  void readSensorValues();
-
-  void isPreparing2Flying();
 
   // Objects
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_VREF, PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
@@ -38,7 +57,13 @@ public:
   // Variables to save
   int _date;
   int _state;
-  // Functions
+  double _startReleasingTime;
+  double _startRunningTime;
+  double _preGpsPollingTime;
+  double _pre20sGpsLat;
+  double _pre20sGpsLon;
+  double _dest_Lat;
+  double _dest_Lon;
 };
 
 #endif
