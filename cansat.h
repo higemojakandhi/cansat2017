@@ -20,7 +20,7 @@ public:
   // Initialization (Constructor and Destructor)
   Cansat();
   ~Cansat();
-  void init(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
+  void setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
 
   // Objects
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_VREF, PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
@@ -41,7 +41,7 @@ public:
   void goal();
   void judgeIdling2Running();
   void judgeStucking2Running();
-  int whichWay2Go(float lat, float lon, float deg);
+  void whichWay2Go(float lat, float lon, float deg);
 
   void judgeIdling();
   void judgeStucking();
@@ -73,6 +73,9 @@ public:
 
   int _countPreLightLoop;
   int _countFlyLightLoop;
+
+  int _direct;
+  int _bodyAngle;
 };
 
 #endif

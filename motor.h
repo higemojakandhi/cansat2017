@@ -13,7 +13,7 @@ class Motor {
 public:
   Motor(int pinMotorVref, int pinMotorFin, int pinMotorRin);
   ~Motor();
-  void goStraight(int v);
+  void setSpeedAt(int v);
   void stop();
 
   int _pinMotorVref;

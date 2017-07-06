@@ -19,7 +19,7 @@ Cansat::Cansat(){
 Cansat::~Cansat(){
 }
 
-void Cansat::init(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio){
+void Cansat::setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio){
   gps.setSerial(serialgps);
   openlog.init(serialopenlog);
 //  radio.setSerial(serialradio);
@@ -95,25 +95,51 @@ void Cansat::landing(){
 void Cansat::running(){
   // このループ入った時の時間を保存
   if(_startRunningTime==0) _startRunningTime = millis();
-  int direction=0;
-  direction = whichWay2Go(gps._lat, gps._lon, nineaxis._deg);
-  /** ここは小柳やってね
-  */
-  // motorControl();
-
-  // judgeIdling();
-  // judgeStucking();
+  int direction=angle=0;
+  whichWay2Go(gps._lat, gps._lon, nineaxis._deg);
+  // タイヤ動かす．
+  if(_direct==0){
+    rightMotor.setSpeedAt(255);
+    leftMotor.setSpeedAt(255);
+  }else if(_direct==1){
+    rightMotor.setSpeedAt(190*(1-_bodyAngle/180));
+    leftMotor.setSpeedAt(255);
+  }else if(_direct==-1){
+    rightMotor.setSpeedAt(255);
+    leftMotor.setSpeedAt(190*(1-_bodyAngle/180));
+  }
   judgeGoal();
 }
 
-int Cansat::whichWay2Go(float lat, float lon, float deg){
+void Cansat::whichWay2Go(float lat, float lon, float deg){
+  // Lat=緯度=y
+  // Lon=軽度=x
   float deltaLat = (_destLat-lat)*0.000001;
   float deltaLon = (_destLat-lat)*0.000001;
   float distance = sqrt(pow(deltaLat,2)+pow(deltaLon,2));
-  /*************************************************************************
-  *************************************************************************/
-  int direction=int(distance);
-  return direction;
+  // 機体座標に変換
+  float bodyLat = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg*180/M_PI);
+  float bodyLon = deltaLon*sin(deg/180*M_PI)-deltaLat*cos(deg*180/M_PI);
+
+  // 機体座標系でのゴールまでの角度を計算
+  float _bodyAngle=0;
+  if(bodyLat>0){
+    _bodyAngle = fabs(atan(bodyLon/bodyLat))*180/M_PI;
+  }else if{
+    _bodyAngle = 180-fabs(atan(bodyLon/bodyLat))*180/M_PI;
+  }else{
+    _bodyAngle=90;
+  }
+  // ある角度以内なら真っ直ぐ，それ以外で右は右，左は左．
+  if(_bodyAngle<ANGLE_THRE){
+    _direct=0; //真っ直ぐ
+  }else{
+    if(bodyLon>=0){
+      _direct=1; //右
+    }else{
+      _direct=-1; //右
+    }
+  }
 }
 
 void Cansat::judgeIdling(){
@@ -156,11 +182,11 @@ void Cansat::stucking(){
   // 無限ループに陥る
   while(_state==STUCKING){
     if(count>170){
-      rightMotor.goStraight(255);
-      leftMotor.goStraight(200);
+      rightMotor.setSpeedAt(255);
+      leftMotor.setSpeedAt(200);
     }else{
-      rightMotor.goStraight(200);
-      leftMotor.goStraight(255);
+      rightMotor.setSpeedAt(200);
+      leftMotor.setSpeedAt(255);
     }
   }
   judgeStucking2Running();

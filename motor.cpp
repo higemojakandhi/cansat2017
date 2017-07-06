@@ -18,11 +18,10 @@ Motor::~Motor(){
 }
 
 
-void Motor::goStraight(int v){
+void Motor::setSpeedAt(int v){
   // digitalWrite(_pinMotorFin, HIGH);
   // digitalWrite(_pinMotorRin, LOW);
   // analogWrite(_pinMotorVref, 100);
-  
   digitalWrite(_pinMotorFin, LOW);
   analogWrite(_pinMotorRin, v);
   delay(100);
