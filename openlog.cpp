@@ -64,7 +64,7 @@ void OpenLog::waitUntilReady2Log(){
       if(_serial->read() == '<')  break;
       // Serial.println("not ready to Log");
     }else{
-      if(i==200) reset(); Serial.println("reset");
+      if(i==200) reset(); Serial.println("OpenLog Reset");
       // Serial.println("not available");
     }
     i++;
@@ -79,7 +79,7 @@ void OpenLog::waitUntilReady2ReceiveCommand(){
       if(_serial->read() == '>') break;
       //  Serial.println("not ready to Receive Command");
     }else{
-      if(i==200) reset(); Serial.println("reset");
+      if(i==200) reset(); Serial.println("OpenLog Reset");
       // Serial.println("not available");
     }
     i++;

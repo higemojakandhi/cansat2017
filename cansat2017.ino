@@ -44,7 +44,8 @@ void loop() {
     MU2はPre, Drop, Land, Goalの時だけ送信
     光センサはPre, Flyingのみ．
   */
-  cansat.gps.readGpsValue();
+//  cansat.gps.readGpsValue();
+
   cansat.nineaxis.readNineAxisValue();
 
   // 手動でcansatの状態を切り替える．
@@ -57,12 +58,14 @@ void loop() {
 
   /** cansatの状態(State)に応じて処理を変更
   */
+  Serial.print("State: "); Serial.println(cansat._state);
     switch (cansat._state) {
       case PREPARING:
         cansat.light.readLightValue();
         cansat.preparing();
         break;
       case FLYING:
+        Serial.print("State: now at FLYING: "); Serial.println(cansat._state);
         cansat.light.readLightValue();
         cansat.flying();
         break;
@@ -77,6 +80,8 @@ void loop() {
         break;
       case IDLING:
         cansat.idling();
+        cansat.leftMotor.setSpeedAt(250);
+        cansat.rightMotor.setSpeedAt(250);
         break;
       case STUCKING:
         cansat.stucking();

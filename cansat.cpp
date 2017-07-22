@@ -81,7 +81,7 @@ void Cansat::landing(){
   // 光ピコピコ
 
   // Landing検知したらReleasePin焼き切る
-  digitalWrite(PIN_RELEASING, HIGH);
+  // ßdigitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if(_startLandingTime!=0){
     unsigned long currentTime = millis();
@@ -95,7 +95,7 @@ void Cansat::landing(){
 void Cansat::running(){
   // このループ入った時の時間を保存
   if(_startRunningTime==0) _startRunningTime = millis();
-  int direction=angle=0;
+  int direction=0;
   whichWay2Go(gps._lat, gps._lon, nineaxis._deg);
   // タイヤ動かす．
   if(_direct==0){
@@ -125,7 +125,7 @@ void Cansat::whichWay2Go(float lat, float lon, float deg){
   float _bodyAngle=0;
   if(bodyLat>0){
     _bodyAngle = fabs(atan(bodyLon/bodyLat))*180/M_PI;
-  }else if{
+  }else if(bodyLat<0){
     _bodyAngle = 180-fabs(atan(bodyLon/bodyLat))*180/M_PI;
   }else{
     _bodyAngle=90;
@@ -226,7 +226,7 @@ String Cansat::createSaveDataString(){
 }
 
 void Cansat::switchStateTo(byte state){
-  _state = (int) state;
+  _state = (int) state - 48;
   Serial.print(F("Switch to "));
   Serial.println(_state);
 }

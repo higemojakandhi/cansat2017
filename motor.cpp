@@ -22,9 +22,12 @@ void Motor::setSpeedAt(int v){
   // digitalWrite(_pinMotorFin, HIGH);
   // digitalWrite(_pinMotorRin, LOW);
   // analogWrite(_pinMotorVref, 100);
-  digitalWrite(_pinMotorFin, LOW);
-  analogWrite(_pinMotorRin, v);
-  delay(100);
+  digitalWrite(_pinMotorFin, HIGH);
+  digitalWrite(_pinMotorRin, LOW);
+//  String motorvolt;
+//  sprintf(motorvolt, "Motor Volt: %03d", 5*v/255);
+//  Serial.println(motorvolt);
+  analogWrite(_pinMotorVref, v);
 }
 
 void Motor::stop(){

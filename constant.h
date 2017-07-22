@@ -7,25 +7,27 @@
 #ifndef _CONSTANT_H_
 #define _CONSTANT_H_
 
-#define PIN_RIGHT_MOTOR_VREF 3
-#define PIN_RIGHT_MOTOR_FIN 4
-#define PIN_RIGHT_MOTOR_RIN  5
-#define PIN_LEFT_MOTOR_VREF 9
-#define PIN_LEFT_MOTOR_FIN 10
-#define PIN_LEFT_MOTOR_RIN  11
+#define PIN_GPS_RX 0
+#define PIN_GPS_TX 1
+
+#define PIN_RIGHT_MOTOR_FIN 3
+#define PIN_RIGHT_MOTOR_RIN 4
+#define PIN_RIGHT_MOTOR_VREF 5
+#define PIN_LEFT_MOTOR_FIN 9
+#define PIN_LEFT_MOTOR_RIN 10
+#define PIN_LEFT_MOTOR_VREF  11
 
 #define PIN_OPENLOG_RESET 22
 #define PIN_LIGHT A0
-#define PIN_GPS_RX 19
-#define PIN_GPS_TX 18
 
-#define PIN_RELEASING 6
+
+#define PIN_RELEASING 13
 
 
 // SEQUENCE
 #define PREPARING 0   // 準備状態（電源オン→GPS衛星補足までの間）
-#define DROPPING 1    // 地上期（運搬→ロケット収納→ロケット発射）
-#define FLYING 2      // 降下中
+#define FLYING 1      // 降下中
+#define DROPPING 2    // 地上期（運搬→ロケット収納→ロケット発射）
 #define LANDING 3     // ジャイロ加速度センサによる着地検知
 #define RUNNING 4     // 走行中
 #define IDLING 5      // アイドリング
@@ -47,5 +49,7 @@
 #define COUNT_FLY2DROP_LOOP_THRE 100
 
 #define GOAL_THRE 5
+
+#define ANGLE_THRE 20
 
 #endif
