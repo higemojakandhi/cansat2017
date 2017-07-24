@@ -6,20 +6,17 @@
 */
 #ifndef _CONSTANT_H_
 #define _CONSTANT_H_
-
-#define PIN_GPS_RX 0
-#define PIN_GPS_TX 1
-
 #define PIN_RIGHT_MOTOR_FIN 3
 #define PIN_RIGHT_MOTOR_RIN 4
-#define PIN_RIGHT_MOTOR_VREF 5
+#define PIN_RIGHT_MOTOR_VREF  5
 #define PIN_LEFT_MOTOR_FIN 9
 #define PIN_LEFT_MOTOR_RIN 10
-#define PIN_LEFT_MOTOR_VREF  11
+#define PIN_LEFT_MOTOR_VREF 11
 
 #define PIN_OPENLOG_RESET 22
 #define PIN_LIGHT A0
-
+#define PIN_GPS_RX 19
+#define PIN_GPS_TX 18
 
 #define PIN_RELEASING 13
 

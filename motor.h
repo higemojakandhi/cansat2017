@@ -15,6 +15,7 @@ public:
   ~Motor();
   void setSpeedAt(int v);
   void stop();
+  void break();
 
   int _pinMotorVref;
   int _pinMotorFin;
