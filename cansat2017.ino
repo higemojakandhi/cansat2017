@@ -21,10 +21,7 @@ Cansat cansat;
 */
 void setup() {
   // Serial通信開始
-  Serial.begin(9600);
-  delay(500);
-  Serial.println("Begin!");
-  // GPS　と OpenLog Serial通信開始
+  Serial.begin(9600); delay(500); Serial.println("Begin!");
   SerialGps.begin(9600);
   SerialOpenLog.begin(9600);
   SerialRadio.begin(9600);
@@ -45,8 +42,7 @@ void loop() {
     MU2はPre, Drop, Land, Goalの時だけ送信
     光センサはPre, Flyingのみ．
   */
-//  cansat.gps.readGpsValue();
-
+  cansat.gps.readGpsValue();
   cansat.nineaxis.readNineAxisValue();
 
   // 手動でcansatの状態を切り替える．
@@ -81,8 +77,8 @@ void loop() {
         break;
       case IDLING:
         cansat.idling();
-        cansat.leftMotor.setSpeedAt(250);
-        cansat.rightMotor.setSpeedAt(250);
+        // cansat.leftMotor.setSpeedAt(250);
+        // cansat.rightMotor.setSpeedAt(250);
         break;
       case STUCKING:
         cansat.stucking();
@@ -95,4 +91,5 @@ void loop() {
     }
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.saveAllData();
+  cansat.send2Xbee();
 }

@@ -23,6 +23,7 @@ void Cansat::setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog,
   gps.setSerial(serialgps);
   openlog.init(serialopenlog);
   radio.setSerial(serialradio);
+  nineaxis.init();
 }
 
 void Cansat::preparing(){
@@ -230,3 +231,9 @@ void Cansat::switchStateTo(byte state){
   Serial.print(F("Switch to "));
   Serial.println(_state);
 }
+
+void Cansat::send2Xbee(){
+  String alldata = createSaveDataString();
+  radio.send(alldata);
+}
+

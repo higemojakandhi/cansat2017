@@ -52,6 +52,7 @@ public:
   // Functions for Saving
   String createSaveDataString();
   void saveAllData();
+  void send2Xbee();
 
   // State Switcher
   void switchStateTo(byte state);
