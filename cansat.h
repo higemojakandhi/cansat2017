@@ -14,6 +14,7 @@
 #include "gps.h"
 #include "nineaxis.h"
 #include "openlog.h"
+#include "radio.h"
 
 class Cansat {
 public:
@@ -29,6 +30,7 @@ public:
   Gps gps;
   NineAxis nineaxis;
   OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
+  Radio radio;
 
   // Functions
   void preparing();

@@ -27,6 +27,7 @@ void setup() {
   // GPS　と OpenLog Serial通信開始
   SerialGps.begin(9600);
   SerialOpenLog.begin(9600);
+  SerialRadio.begin(9600);
   // cansatにSerialを渡す & 初期化
   cansat.setSerial(&SerialGps, &SerialOpenLog, &SerialRadio);
   Serial.println("All Set!");

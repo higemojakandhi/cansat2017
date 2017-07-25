@@ -22,7 +22,7 @@ Cansat::~Cansat(){
 void Cansat::setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio){
   gps.setSerial(serialgps);
   openlog.init(serialopenlog);
-//  radio.setSerial(serialradio);
+  radio.setSerial(serialradio);
 }
 
 void Cansat::preparing(){

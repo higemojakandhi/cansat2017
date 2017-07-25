@@ -34,12 +34,12 @@ void Motor::setSpeedAt(int v){
 }
 
 void Motor::stop(){
-  break();
+  breaking();
   digitalWrite(_pinMotorFin, LOW);
   digitalWrite(_pinMotorRin, LOW);
 }
 
-void Motor::break(){
+void Motor::breaking(){
   digitalWrite(_pinMotorFin, HIGH);  
   digitalWrite(_pinMotorRin, HIGH);  
   delay(100);
