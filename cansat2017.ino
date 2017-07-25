@@ -33,11 +33,10 @@ void setup() {
 /** ループ関数
 */
 void loop() {
-  /**　初期化
-    出来ればセンサーのキャリブレーション毎回したい．もしくは数ループに１回
-  */
+  // センサーキャリブレーション
 
-  /**　センサー値取得
+  // センサー値取得
+  /**　
     GPS, 9軸は毎ループ
     MU2はPre, Drop, Land, Goalの時だけ送信
     光センサはPre, Flyingのみ．
@@ -57,33 +56,33 @@ void loop() {
   */
   Serial.print("State: "); Serial.println(cansat._state);
     switch (cansat._state) {
-      case PREPARING:
+      case PREPARING: // 0
         cansat.light.readLightValue();
         cansat.preparing();
         break;
-      case FLYING:
+      case FLYING: // 1
         Serial.print("State: now at FLYING: "); Serial.println(cansat._state);
         cansat.light.readLightValue();
         cansat.flying();
         break;
-      case DROPPING:
+      case DROPPING: // 2
         cansat.dropping();
         break;
-      case LANDING:
+      case LANDING: // 3
         cansat.landing();
         break;
-      case RUNNING:
+      case RUNNING: // 4
         cansat.running();
         break;
-      case IDLING:
+      case IDLING: // 5
         cansat.idling();
         // cansat.leftMotor.setSpeedAt(250);
         // cansat.rightMotor.setSpeedAt(250);
         break;
-      case STUCKING:
+      case STUCKING: // 6
         cansat.stucking();
         break;
-      case GOAL:
+      case GOAL: // 7
         cansat.goal();
         break;
       default:
@@ -91,5 +90,5 @@ void loop() {
     }
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.saveAllData();
-  cansat.send2Xbee();
+  if(cansat._state!=FLYING) cansat.send2Xbee();
 }

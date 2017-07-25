@@ -46,6 +46,8 @@ void Cansat::flying(){
   // このループ入った時の時間を保存．
   if(_startFlyingTime==0) _startFlyingTime = millis();
   // 光ピコピコ
+  rightMotor.stop();
+  leftMotor.stop();
 
   // Droppingのジャッジ
   if(light._lightValue > FLY2DROP_THRE){
@@ -62,6 +64,7 @@ void Cansat::dropping(){
   // 光ピコピコ
 /**************************************************************************
   // Landingのジャッジ
+  // x, y, zの3方向
   for(int i=0; i<3; i++){
     // 角度，各加速度，加速度がある一定値以下になるのが一定回数以上続けばflag=1;
   }
@@ -82,13 +85,14 @@ void Cansat::landing(){
   // 光ピコピコ
 
   // Landing検知したらReleasePin焼き切る
-  // ßdigitalWrite(PIN_RELEASING, HIGH);
+  // digitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if(_startLandingTime!=0){
     unsigned long currentTime = millis();
     if (currentTime - _startLandingTime > RELEASING_TIME_THRE){
       digitalWrite(PIN_RELEASING, LOW);
       _state=RUNNING;
+      delay(1000);
     }
   }
 }
@@ -236,4 +240,3 @@ void Cansat::send2Xbee(){
   String alldata = createSaveDataString();
   radio.send(alldata);
 }
-
