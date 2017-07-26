@@ -76,8 +76,6 @@ void loop() {
         break;
       case IDLING: // 5
         cansat.idling();
-        // cansat.leftMotor.setSpeedAt(250);
-        // cansat.rightMotor.setSpeedAt(250);
         break;
       case STUCKING: // 6
         cansat.stucking();

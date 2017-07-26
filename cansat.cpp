@@ -30,8 +30,6 @@ void Cansat::preparing(){
   // このループ入った時の時間を保存．
   if(_startPreparingTime==0) _startPreparingTime = millis();
   // モータは停止
-  rightMotor.stop();
-  leftMotor.stop();
 
   // Flyingのジャッジ
   if(light._lightValue < PRE2FLY_THRE) {
@@ -226,7 +224,8 @@ String Cansat::createSaveDataString(){
   alldata += String(gps._posAccuracy) + ", ";
   alldata += String(nineaxis._gx) + ", ";
   alldata += String(nineaxis._gy) + ", ";
-  alldata += String(nineaxis._gz);
+  alldata += String(nineaxis._gz) + ", ";
+  alldata += String(_state);
   return alldata;
 }
 
