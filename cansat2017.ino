@@ -36,11 +36,6 @@ void loop() {
   // センサーキャリブレーション
 
   // センサー値取得
-  /**　
-    GPS, 9軸は毎ループ
-    MU2はPre, Drop, Land, Goalの時だけ送信
-    光センサはPre, Flyingのみ．
-  */
   cansat.gps.readGpsValue();
   cansat.nineaxis.readNineAxisValue();
 
@@ -52,8 +47,7 @@ void loop() {
     cansat.switchStateTo(inputState);
   }
 
-  /** cansatの状態(State)に応じて処理を変更
-  */
+  // cansatの状態(State)に応じて処理を変更
   Serial.print("State: "); Serial.println(cansat._state);
     switch (cansat._state) {
       case PREPARING: // 0
@@ -86,7 +80,23 @@ void loop() {
       default:
         break;
     }
+
+  // 送信用のデータ作成
+  String alldata = "";
+  alldata += String(millis()) + ", ";
+  alldata += String(cansat.nineaxis._deg) + ", ";
+  alldata += String(cansat.light._lightValue) + ", ";
+  alldata += String(cansat.gps._lat) + ", ";
+  alldata += String(cansat.gps._lon) + ", ";
+  alldata += String(cansat.gps._satNum) + ", ";
+  alldata += String(cansat.gps._posAccuracy) + ", ";
+  alldata += String(cansat.nineaxis._gx) + ", ";
+  alldata += String(cansat.nineaxis._gy) + ", ";
+  alldata += String(cansat.nineaxis._gz) + ", ";
+  alldata += String(cansat._state) + ", ";
+
   // 全て処理が終わったらループの最後にSDにデータの記録
-  cansat.saveAllData();
-  if(cansat._state!=FLYING) cansat.send2Xbee();
+  cansat.openlog.saveDataOnSD(alldata);
+  // Xbeeに同じデータを送信
+  if(cansat._state!=FLYING) cansat.radio.send(alldata);
 }

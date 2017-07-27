@@ -27,10 +27,12 @@ public:
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
   Motor rightMotor = Motor(PIN_RIGHT_MOTOR_FIN, PIN_RIGHT_MOTOR_RIN);
   Light light = Light(PIN_LIGHT);
+  // Serial 通信 (Pin番号の指定いらない)
   Gps gps;
-  NineAxis nineaxis;
   OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
   Radio radio;
+  // I2C 通信 (Pin番号の指定いらない)
+  NineAxis nineaxis;
 
   // Functions
   void preparing();
@@ -48,11 +50,6 @@ public:
   void judgeIdling();
   void judgeStucking();
   void judgeGoal();
-
-  // Functions for Saving
-  String createSaveDataString();
-  void saveAllData();
-  void send2Xbee();
 
   // State Switcher
   void switchStateTo(byte state);

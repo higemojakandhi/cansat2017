@@ -208,34 +208,8 @@ void Cansat::goal(){
     // LED チカチカ
 }
 
-void Cansat::saveAllData(){
-  String alldata = createSaveDataString();
-  openlog.saveDataOnSD(alldata);
-}
-
-String Cansat::createSaveDataString(){
-  String alldata = "";
-  alldata += String(millis()) + ", ";
-  alldata += String(nineaxis._deg) + ", ";
-  alldata += String(light._lightValue) + ", ";
-  alldata += String(gps._lat) + ", ";
-  alldata += String(gps._lon) + ", ";
-  alldata += String(gps._satNum) + ", ";
-  alldata += String(gps._posAccuracy) + ", ";
-  alldata += String(nineaxis._gx) + ", ";
-  alldata += String(nineaxis._gy) + ", ";
-  alldata += String(nineaxis._gz) + ", ";
-  alldata += String(_state);
-  return alldata;
-}
-
 void Cansat::switchStateTo(byte state){
   _state = (int) state - 48;
   Serial.print(F("Switch to "));
   Serial.println(_state);
-}
-
-void Cansat::send2Xbee(){
-  String alldata = createSaveDataString();
-  radio.send(alldata);
 }
