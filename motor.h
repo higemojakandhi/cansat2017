@@ -11,13 +11,12 @@
 
 class Motor {
 public:
-  Motor(int pinMotorVref, int pinMotorFin, int pinMotorRin);
+  Motor(int pinMotorFin, int pinMotorRin);
   ~Motor();
   void setSpeedAt(int v);
   void stop();
   void breaking();
 
-  int _pinMotorVref;
   int _pinMotorFin;
   int _pinMotorRin;
 };
