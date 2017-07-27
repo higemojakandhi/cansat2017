@@ -12,6 +12,7 @@ OpenLog::OpenLog(int pinOpenLogReset){
 }
 
 OpenLog::~OpenLog(){
+  _serial=NULL;
 }
 
 void OpenLog::init(HardwareSerial* serial){

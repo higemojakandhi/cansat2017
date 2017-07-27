@@ -10,6 +10,7 @@ Radio::Radio(){
 }
 
 Radio::~Radio(){
+  _serial = NULL;
 }
 
 void Radio::setSerial(HardwareSerial *serial){
