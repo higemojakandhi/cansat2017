@@ -10,8 +10,8 @@
 #include <string.h>
 #include "Arduino.h"
 #include <math.h>
-#include <Wire.h>
-#include <FaBo9Axis_MPU9250.h>
+#include <MPU9250_RegisterMap.h>
+#include <SparkFunMPU9250-DMP.h>
 
 
 class NineAxis {
@@ -20,17 +20,15 @@ public:
   ~NineAxis();
   void init();
   void readNineAxisValue();
-  void printNineAxisValue();
-  float calcDegree(float a, float b);
   void convertAccel(float* x, float* y, float* z);
 
-  FaBo9Axis fabo_9axis;
-  int _pinNineAxis;
-  float _ax, _ay, _az;
-  float _gx, _gy, _gz;
-  float _mx, _my, _mz;
-  float _temp;
-  float _deg;
+  MPU9250_DMP imu;
+  float _accelX, _accelY, _accelZ; // m/s^2
+  float _gyroX, _gyroY, _gyroZ; // degree per second
+  float _magX, _magY, _magZ; // micro Tesla
+  float _temp; // i dont know
+  float _pitch, _roll, _yaw; //degree
+  float _deg; // degree
 };
 
 #endif
