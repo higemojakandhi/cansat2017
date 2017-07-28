@@ -16,27 +16,42 @@ HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial
 
 // cansatオブジェクト生成
 Cansat cansat;
+// 日付とファイル名は毎回指定しようと思う
+// date = 20170728;
+// time = 014430;
+// numFile = 100;
 
 /** 初期化関数
+* 全てのセンサーがしっかりセットアップされるまで無限に待つ
+* 成功・失敗のメッセージは必ず吐き出すこと
+* error:
+* success:
 */
 void setup() {
   // Serial通信開始
-  Serial.begin(9600); delay(500); Serial.println("Begin!");
+  Serial.begin(9600); Serial.println("Begin!");
   SerialGps.begin(9600);
   SerialOpenLog.begin(9600);
   SerialRadio.begin(9600);
-  // cansatにSerialを渡す & 初期化
+  // それぞれに bool setSerialで確認
+  // if(!cansat.openlog.setSerial()) while(1)
+  // while(!cansat.gps.setSerial()){
+  //  SerialOpenLog.println(F("error: GPS not available"))
+  //  Serial.println(F("error: GPS not available"));
+  // }
   cansat.setSerial(&SerialGps, &SerialOpenLog, &SerialRadio);
+  // それぞれ初期化
   Serial.println("All Set!");
 }
 
 /** ループ関数
 */
 void loop() {
-  // センサーキャリブレーション
-
   // センサー値取得
+  // それぞれのセンサーにOpenLogを渡し，errorメッセージを記録
+  // 位置が取れない場合どうする？ flag渡してgpsが不可ならpeed/degからカルマンフィルタで位置を推定
   cansat.gps.readGpsValue();
+  // 9軸が取れない場合はどうする？ flag渡して9軸が不可ならgpsのlat/lon/speed/degから計算
   cansat.nineaxis.readNineAxisValue();
 
   // 手動でcansatの状態を切り替える．
@@ -55,7 +70,6 @@ void loop() {
         cansat.preparing();
         break;
       case FLYING: // 1
-        Serial.print("State: now at FLYING: "); Serial.println(cansat._state);
         cansat.light.readLightValue();
         cansat.flying();
         break;
