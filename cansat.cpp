@@ -14,6 +14,7 @@ Cansat::Cansat(){
   _startRunningTime=0;
   _countPreLightLoop=0;
   _countFlyLightLoop=0;
+  _countDrop2LandLoop=0;
 }
 
 Cansat::~Cansat(){
@@ -60,21 +61,18 @@ void Cansat::dropping(){
   // このループ入った時の時間を保存．
   if(_startDroppingTime==0) _startDroppingTime = millis();
   // 光ピコピコ
-/**************************************************************************
-  // Landingのジャッジ
-  // x, y, zの3方向
-  for(int i=0; i<3; i++){
-    // 角度，各加速度，加速度がある一定値以下になるのが一定回数以上続けばflag=1;
-  }
-  // 冗長系である一定時間過ぎたらflagLandingTime=1 -> LANDINGに
-  if(_startDroppingTime!=0){
-    unsigned long currentTime = millis();
-    if(currentTime-_startDroppingTime > LANDING_TIME_THRE) _flagLandingTime = 1;
+
+  // z軸加速度とx,yジャイロがある閾値以下の場合は着地
+  if(nineaxis._accelZ<ACCELZ_THRE && nineaxis._gyroX<GYROX_THRE && nineaxis._gyroY<GYROY_THRE){
+    _countDrop2LandLoop++;
+    if(_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE) _state=LANDING;
+  }else{
+    _countDrop2LandLoop=0;
   }
 
-  // Landing切り替え
-  if(_flagLandingTime==1) _state=LANDING;
-**************************************************************************/
+  if(_startDroppingTime!=0){
+    if(millis()-_startDroppingTime>LANDING_TIME_THRE) _state=LANDING;
+  }
   _state = LANDING;
 }
 
@@ -87,8 +85,7 @@ void Cansat::landing(){
   digitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if(_startLandingTime!=0){
-    unsigned long currentTime = millis();
-    if (currentTime - _startLandingTime > RELEASING_TIME_THRE){
+    if (millis()-_startLandingTime > RELEASING_TIME_THRE){
       digitalWrite(PIN_RELEASING, LOW);
       _state=RUNNING;
       delay(1000);

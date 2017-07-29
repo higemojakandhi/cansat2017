@@ -73,6 +73,7 @@ public:
 
   int _countPreLightLoop;
   int _countFlyLightLoop;
+  int _countDrop2LandLoop;
 
   int _direct;
   int _bodyAngle;

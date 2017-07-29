@@ -45,9 +45,15 @@
 #define GoalLEDs_thre     20000       // ゴール後のLED点灯時間
 #define COUNT_PRE2FLY_LOOP_THRE 30
 #define COUNT_FLY2DROP_LOOP_THRE 100
+#define COUNT_DROP2LAND_LOOP_THRE 200
 
 #define GOAL_THRE 5
 
 #define ANGLE_THRE 20
+
+#define ACCELZ_THRE 0.5
+#define GYROX_THRE 250
+#define GYROY_THRE 250
+#define LANDING_TIME_THRE 180000
 
 #endif
