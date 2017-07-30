@@ -6,10 +6,10 @@
 #include "nineaxis.h"
 
 NineAxis::NineAxis(){
-  _ax=_ay=_az=0;
-  _gx=_gy=_gz=0;
-  _mx=_my=_mz=0;
-  _temp=0;
+  _accelX=_accelY=_accelZ=0;
+  _gyroX=_gyroY=_gyroZ=0;
+  _magX=_magY=_magZ=0;
+  _pitch=_roll=_yaw=0;
   _deg=0;
 }
 
@@ -17,33 +17,52 @@ NineAxis::~NineAxis(){
 }
 
 void NineAxis::init(){
-    if (fabo_9axis.begin()) {
-      Serial.println("configured FaBo 9Axis I2C Brick");
-    } else {
-      Serial.println("device error");
-      while(1);
+  if(imu.begin() == INV_SUCCESS){
+      Serial.println(F("configured MPU-9250"));
+  }else{
+    while (1)
+    {
+      Serial.println("Unable to communicate with MPU-9250");
+      Serial.println("Check connections, and try again.");
+      Serial.println();
+      delay(5000);
     }
+  }
+
+  imu.setSensors(INV_XYZ_GYRO | INV_XYZ_ACCEL | INV_XYZ_COMPASS);
+  imu.setAccelFSR(16);
+  imu.setLPF(10);
+  imu.dmpBegin( DMP_FEATURE_SEND_RAW_ACCEL |
+                DMP_FEATURE_GYRO_CAL |
+                DMP_FEATURE_SEND_CAL_GYRO |
+                DMP_FEATURE_6X_LP_QUAT,
+                10);
 }
 
 void NineAxis::readNineAxisValue(){
-  fabo_9axis.readAccelXYZ(&_ax,&_ay,&_az);
-  convertAccel(&_ax, &_ay, &_az);
-  fabo_9axis.readGyroXYZ(&_gx,&_gy,&_gz);
-  fabo_9axis.readMagnetXYZ(&_mx,&_my,&_mz);
-  fabo_9axis.readTemperature(&_temp);
-  _deg = calcDegree(_my, _mx);
-}
-
-void NineAxis::printNineAxisValue(){
-  Serial.print("Digital Compass Angle [deg] ");
-  Serial.println(_deg);
-}
-
-
-float NineAxis::calcDegree(float a, float b){
-  float result;
-  result = atan2(a,b)*180/PI;
-  return result;
+  if ( imu.fifoAvailable() ){
+    if ( imu.dmpUpdateFifo() == INV_SUCCESS){
+      _accelX = imu.calcAccel(imu.ax);
+      _accelY = imu.calcAccel(imu.ay);
+      _accelZ = imu.calcAccel(imu.az);
+      convertAccel(&_accelX, &_accelY, &_accelZ);
+      _gyroX = imu.calcGyro(imu.gx);
+      _gyroY = imu.calcGyro(imu.gy);
+      _gyroZ = imu.calcGyro(imu.gz);
+      _magX = imu.calcMag(imu.mx);
+      _magY = imu.calcMag(imu.my);
+      _magZ = imu.calcMag(imu.mz);
+      imu.computeEulerAngles(); // true=degree, false=rad
+      _q0 = imu.calcQuat(imu.qw);
+      _q1 = imu.calcQuat(imu.qx);
+      _q2 = imu.calcQuat(imu.qy);
+      _q3 = imu.calcQuat(imu.qz);
+      _pitch = imu.pitch;
+      _roll = imu.roll;
+      _yaw = imu.yaw;
+      _deg = imu.computeCompassHeading();
+    }
+  }
 }
 
 void NineAxis::convertAccel(float* x, float* y, float* z){
