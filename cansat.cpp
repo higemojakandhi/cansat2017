@@ -15,6 +15,7 @@ Cansat::Cansat(){
   _countPreLightLoop=0;
   _countFlyLightLoop=0;
   _countDrop2LandLoop=0;
+  pinMode(PIN_RELEASING, OUTPUT);
 }
 
 Cansat::~Cansat(){
@@ -82,7 +83,7 @@ void Cansat::landing(){
   // 光ピコピコ
 
   // Landing検知したらReleasePin焼き切る
-  // digitalWrite(PIN_RELEASING, HIGH);
+  digitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if(_startLandingTime!=0){
     if (millis()-_startLandingTime > RELEASING_TIME_THRE){
@@ -96,7 +97,6 @@ void Cansat::landing(){
 void Cansat::running(){
   // このループ入った時の時間を保存
   if(_startRunningTime==0) _startRunningTime = millis();
-  int direction=0;
   rightMotor.setSpeedAt(255);
   leftMotor.setSpeedAt(255);
   /*
@@ -121,7 +121,7 @@ void Cansat::whichWay2Go(float lat, float lon, float deg){
   // Lon=軽度=x
   float deltaLat = (_destLat-lat)*0.000001;
   float deltaLon = (_destLat-lat)*0.000001;
-  float distance = sqrt(pow(deltaLat,2)+pow(deltaLon,2));
+  _distance = sqrt(pow(deltaLat,2)+pow(deltaLon,2));
   // 機体座標に変換
   float bodyLat = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg*180/M_PI);
   float bodyLon = deltaLon*sin(deg/180*M_PI)-deltaLat*cos(deg*180/M_PI);

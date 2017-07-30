@@ -68,6 +68,7 @@ public:
 
   float _destLat;
   float _destLon;
+  float _distance;
 
   int _flagLandingTime;
 
