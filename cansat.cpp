@@ -14,6 +14,7 @@ Cansat::Cansat(){
   _startRunningTime=0;
   _countPreLightLoop=0;
   _countFlyLightLoop=0;
+  pinMode(PIN_RELEASING,OUTPUT);
 }
 
 Cansat::~Cansat(){
