@@ -68,11 +68,13 @@ public:
 
   float _destLat;
   float _destLon;
+  float _distance;
 
   int _flagLandingTime;
 
   int _countPreLightLoop;
   int _countFlyLightLoop;
+  int _countDrop2LandLoop;
 
   int _direct;
   int _bodyAngle;

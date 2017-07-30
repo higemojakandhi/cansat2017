@@ -14,6 +14,10 @@
 
 #define PIN_OPENLOG_RESET 22
 #define PIN_LIGHT A0
+#define PIN_LED_BLUE A1
+#define PIN_LED_GREEN A2
+#define PIN_LED_RED A3
+
 #define PIN_GPS_RX 19
 #define PIN_GPS_TX 18
 
@@ -45,9 +49,15 @@
 #define GoalLEDs_thre     20000       // ゴール後のLED点灯時間
 #define COUNT_PRE2FLY_LOOP_THRE 30
 #define COUNT_FLY2DROP_LOOP_THRE 100
+#define COUNT_DROP2LAND_LOOP_THRE 200
 
 #define GOAL_THRE 5
 
 #define ANGLE_THRE 20
+
+#define ACCELZ_THRE 11
+#define GYROX_THRE 10
+#define GYROY_THRE 10
+#define LANDING_TIME_THRE 180000
 
 #endif
