@@ -22,7 +22,14 @@ void Motor::setSpeedAt(int v){
   // 正転・逆転どっちか
   if(v<0) v=0;
   if(v>255) v=0;
-  digitalWrite(_pinMotorFin, HIGH);
+  analogWrite(_pinMotorFin, v);
+  digitalWrite(_pinMotorRin, LOW);
+}
+
+void Motor::goBack(int v){
+  if(v<0) v=0;
+  if(v>255) v=0;
+  digitalWrite(_pinMotorFin, LOW);
   analogWrite(_pinMotorRin, v);
 }
 
