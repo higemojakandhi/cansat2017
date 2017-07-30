@@ -6,15 +6,9 @@
 #include "nineaxis.h"
 
 NineAxis::NineAxis(){
-  _ax=_ay=_az=0;
-  _gx=_gy=_gz=0;
-  _mx=_my=_mz=0;
-  _temp=0;
-  _deg=0;
   _accelX=_accelY=_accelZ=0;
   _gyroX=_gyroY=_gyroZ=0;
   _magX=_magY=_magZ=0;
-  _temp=0;
   _pitch=_roll=_yaw=0;
   _deg=0;
 }
@@ -23,14 +17,14 @@ NineAxis::~NineAxis(){
 }
 
 void NineAxis::init(){
-  if (imu.begin() = INV_SUCCESS){
+  if(imu.begin() == INV_SUCCESS){
       Serial.println(F("configured MPU-9250"));
   }else{
     while (1)
     {
-      SerialPort.println("Unable to communicate with MPU-9250");
-      SerialPort.println("Check connections, and try again.");
-      SerialPort.println();
+      Serial.println("Unable to communicate with MPU-9250");
+      Serial.println("Check connections, and try again.");
+      Serial.println();
       delay(5000);
     }
   }
@@ -46,10 +40,6 @@ void NineAxis::init(){
 }
 
 void NineAxis::readNineAxisValue(){
-  if(imu.dataReady()){
-    imu.update(UPDATE_TEMPERATURE);
-    _temp = imu.temperature;
-  }
   if ( imu.fifoAvailable() ){
     if ( imu.dmpUpdateFifo() == INV_SUCCESS){
       _accelX = imu.calcAccel(imu.ax);

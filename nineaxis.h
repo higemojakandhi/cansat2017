@@ -26,7 +26,6 @@ public:
   float _accelX, _accelY, _accelZ; // m/s^2
   float _gyroX, _gyroY, _gyroZ; // degree per second
   float _magX, _magY, _magZ; // micro Tesla
-  float _temp; // i dont know
   float _pitch, _roll, _yaw; //degree
   float _deg; // degree
 };
