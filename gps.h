@@ -21,6 +21,7 @@ public:
   unsigned long _time;
   float _lat;
   float _lon;
+  float _alt;
   short _satNum;
   float _posAccuracy;
   char _buf[200];

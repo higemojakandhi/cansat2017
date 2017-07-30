@@ -98,16 +98,20 @@ void loop() {
   // 送信用のデータ作成
   String alldata = "";
   alldata += String(millis()) + ", ";
-  alldata += String(cansat.nineaxis._deg) + ", ";
-  alldata += String(cansat.light._lightValue) + ", ";
+  alldata += String(cansat._state) + ", ";
   alldata += String(cansat.gps._lat) + ", ";
   alldata += String(cansat.gps._lon) + ", ";
   alldata += String(cansat.gps._satNum) + ", ";
   alldata += String(cansat.gps._posAccuracy) + ", ";
+  alldata += String(cansat.gps._alt) + ", ";
+  alldata += String(cansat.nineaxis._ax) + ", ";
+  alldata += String(cansat.nineaxis._ay) + ", ";
+  alldata += String(cansat.nineaxis._az) + ", ";
   alldata += String(cansat.nineaxis._gx) + ", ";
   alldata += String(cansat.nineaxis._gy) + ", ";
   alldata += String(cansat.nineaxis._gz) + ", ";
-  alldata += String(cansat._state) + ", ";
+  alldata += String(cansat.nineaxis._deg) + ", ";
+  alldata += String(cansat.light._lightValue) + ", ";
 
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.openlog.saveDataOnSD(alldata);

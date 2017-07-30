@@ -23,7 +23,7 @@ void Gps::setSerial(HardwareSerial* serial){
 
 void Gps::readGpsValue(){
   int count = 0;
-  float latDeg, latMin, lonDeg, lonMin, alt, latDegReal, latMinReal, lonDegReal, lonMinReal;
+  float latDeg, latMin, lonDeg, lonMin, latDegReal, latMinReal, lonDegReal, lonMinReal;
 
   do {
     if (_serial->available()) {
@@ -50,7 +50,7 @@ void Gps::readGpsValue(){
     strtok(NULL, ",");
     _satNum = (short)atof(strtok(NULL, ","));     // The number of Satellites
     _posAccuracy = atof(strtok(NULL, ","));// The accuracy of its position
-    alt = atof(strtok(NULL, ","));     // The height
+    _alt = atof(strtok(NULL, ","));     // The height
 
 
     latDegReal = (long)latDeg / 100;
