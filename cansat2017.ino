@@ -104,15 +104,16 @@ void loop() {
   alldata += String(cansat.gps._satNum) + ", ";
   alldata += String(cansat.gps._posAccuracy) + ", ";
   alldata += String(cansat.gps._alt) + ", ";
-  alldata += String(cansat.nineaxis._ax) + ", ";
-  alldata += String(cansat.nineaxis._ay) + ", ";
-  alldata += String(cansat.nineaxis._az) + ", ";
-  alldata += String(cansat.nineaxis._gx) + ", ";
-  alldata += String(cansat.nineaxis._gy) + ", ";
-  alldata += String(cansat.nineaxis._gz) + ", ";
+  alldata += String(cansat.nineaxis._accelX) + ", ";
+  alldata += String(cansat.nineaxis._accelY) + ", ";
+  alldata += String(cansat.nineaxis._accelZ) + ", ";
+  alldata += String(cansat.nineaxis._gyroX) + ", ";
+  alldata += String(cansat.nineaxis._gyroX) + ", ";
+  alldata += String(cansat.nineaxis._gyroZ) + ", ";
   alldata += String(cansat.nineaxis._deg) + ", ";
   alldata += String(cansat.light._lightValue) + ", ";
 
+  Serial.println(alldata);
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.openlog.saveDataOnSD(alldata);
   // Xbeeに同じデータを送信
