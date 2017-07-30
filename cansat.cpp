@@ -75,6 +75,7 @@ void Cansat::dropping(){
   // Landing切り替え
   if(_flagLandingTime==1) _state=LANDING;
 **************************************************************************/
+  _state = LANDING;
 }
 
 void Cansat::landing(){
@@ -83,7 +84,7 @@ void Cansat::landing(){
   // 光ピコピコ
 
   // Landing検知したらReleasePin焼き切る
-  // digitalWrite(PIN_RELEASING, HIGH);
+  digitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if(_startLandingTime!=0){
     unsigned long currentTime = millis();
@@ -99,6 +100,9 @@ void Cansat::running(){
   // このループ入った時の時間を保存
   if(_startRunningTime==0) _startRunningTime = millis();
   int direction=0;
+  rightMotor.setSpeedAt(255);
+  leftMotor.setSpeedAt(255);
+  /*
   whichWay2Go(gps._lat, gps._lon, nineaxis._deg);
   // タイヤ動かす．
   if(_direct==0){
@@ -111,6 +115,7 @@ void Cansat::running(){
     rightMotor.setSpeedAt(255);
     leftMotor.setSpeedAt(190*(1-_bodyAngle/180));
   }
+  */
   judgeGoal();
 }
 
