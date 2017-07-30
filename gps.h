@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "Arduino.h"
+#include <TinyGPS++.h>
 
 class Gps {
 public:
@@ -15,16 +16,18 @@ public:
   ~Gps();
   void setSerial(HardwareSerial* serial);
   void readGpsValue();
-  void printGpsValue();
 
   HardwareSerial* _serial;
+  TinyGPSPlus tinygps;
   unsigned long _time;
-  float _lat;
-  float _lon;
+  float _lat, _lon;
+  short _year, _month, _day;
+  short _hour, _minute, _second, _centisecond;
+  float _speed;
+  float _deg;
   float _alt;
   short _satNum;
   float _posAccuracy;
-  char _buf[200];
 };
 
 #endif

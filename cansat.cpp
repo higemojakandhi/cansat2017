@@ -16,6 +16,9 @@ Cansat::Cansat(){
   _countFlyLightLoop=0;
   _countDrop2LandLoop=0;
   pinMode(PIN_RELEASING, OUTPUT);
+  pinMode(PIN_LED_BLUE, OUTPUT);
+  pinMode(PIN_LED_GREEN, OUTPUT);
+  pinMode(PIN_LED_RED, OUTPUT);
 }
 
 Cansat::~Cansat(){
@@ -46,6 +49,11 @@ void Cansat::flying(){
   // このループ入った時の時間を保存．
   if(_startFlyingTime==0) _startFlyingTime = millis();
   // 光ピコピコ
+  analogWrite(PIN_LED_BLUE, 255); 
+  analogWrite(PIN_LED_GREEN, 0);
+  analogWrite(PIN_LED_RED, 0);
+
+  // 動作
   rightMotor.stop();
   leftMotor.stop();
 
@@ -62,6 +70,9 @@ void Cansat::dropping(){
   // このループ入った時の時間を保存．
   if(_startDroppingTime==0) _startDroppingTime = millis();
   // 光ピコピコ
+  analogWrite(PIN_LED_BLUE, 0); 
+  analogWrite(PIN_LED_GREEN, 255);
+  analogWrite(PIN_LED_RED, 0);
 
   // z軸加速度とx,yジャイロがある閾値以下の場合は着地
   if(nineaxis._accelZ<ACCELZ_THRE && nineaxis._gyroX<GYROX_THRE && nineaxis._gyroY<GYROY_THRE){
@@ -72,18 +83,21 @@ void Cansat::dropping(){
   }
 
   if(_startDroppingTime!=0){
-    if(millis()-_startDroppingTime>LANDING_TIME_THRE) _state=LANDING;
+    if(millis()-_startDroppingTime>LANDING_TIME_THRE)   _state = RUNNING; //_state=LANDING;
   }
-  _state = LANDING;
+  // 緊急テスト
 }
 
 void Cansat::landing(){
   // このループ入った時の時間を保存．
   if(_startLandingTime==0) _startLandingTime = millis();
   // 光ピコピコ
+  analogWrite(PIN_LED_BLUE, 0); 
+  analogWrite(PIN_LED_GREEN, 0);
+  analogWrite(PIN_LED_RED, 255);
 
   // Landing検知したらReleasePin焼き切る
-  digitalWrite(PIN_RELEASING, HIGH);
+//  digitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if(_startLandingTime!=0){
     if (millis()-_startLandingTime > RELEASING_TIME_THRE){
@@ -97,6 +111,11 @@ void Cansat::landing(){
 void Cansat::running(){
   // このループ入った時の時間を保存
   if(_startRunningTime==0) _startRunningTime = millis();
+  // 光ピコピコ
+  analogWrite(PIN_LED_BLUE, 255); 
+  analogWrite(PIN_LED_GREEN, 255);
+  analogWrite(PIN_LED_RED, 255);
+  // 動作
   rightMotor.setSpeedAt(255);
   leftMotor.setSpeedAt(255);
   /*

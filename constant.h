@@ -14,6 +14,10 @@
 
 #define PIN_OPENLOG_RESET 22
 #define PIN_LIGHT A0
+#define PIN_LED_BLUE A1
+#define PIN_LED_GREEN A2
+#define PIN_LED_RED A3
+
 #define PIN_GPS_RX 19
 #define PIN_GPS_TX 18
 
