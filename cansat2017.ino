@@ -110,12 +110,17 @@ void loop() {
   alldata += String(cansat.nineaxis._gyroX) + ", ";
   alldata += String(cansat.nineaxis._gyroX) + ", ";
   alldata += String(cansat.nineaxis._gyroZ) + ", ";
+  alldata += String(cansat.nineaxis._pitch) + ", ";
+  alldata += String(cansat.nineaxis._roll) + ", ";
+  alldata += String(cansat.nineaxis._yaw) + ", ";
   alldata += String(cansat.nineaxis._deg) + ", ";
   alldata += String(cansat.light._lightValue) + ", ";
 
+  Serial.print("Time[ms], State, Lat, Lon, numSat, PosAccuracy, alt, ");
+  Serial.println("accX, accY, accZ, gyroX, gyroY, gyroZ, Pitch, Roll, Yaw, Deg, light");
   Serial.println(alldata);
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.openlog.saveDataOnSD(alldata);
   // Xbeeに同じデータを送信
-  if(cansat._state!=FLYING) cansat.radio.send(alldata);
+//  if(cansat._state!=FLYING) cansat.radio.send(alldata);
 }

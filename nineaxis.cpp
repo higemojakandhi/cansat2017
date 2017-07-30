@@ -52,7 +52,11 @@ void NineAxis::readNineAxisValue(){
       _magX = imu.calcMag(imu.mx);
       _magY = imu.calcMag(imu.my);
       _magZ = imu.calcMag(imu.mz);
-      imu.computeEulerAngles(true); // true=degree, false=rad
+      imu.computeEulerAngles(); // true=degree, false=rad
+      _q0 = imu.calcQuat(imu.qw);
+      _q1 = imu.calcQuat(imu.qx);
+      _q2 = imu.calcQuat(imu.qy);
+      _q3 = imu.calcQuat(imu.qz);
       _pitch = imu.pitch;
       _roll = imu.roll;
       _yaw = imu.yaw;

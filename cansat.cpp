@@ -82,7 +82,7 @@ void Cansat::landing(){
   // 光ピコピコ
 
   // Landing検知したらReleasePin焼き切る
-  digitalWrite(PIN_RELEASING, HIGH);
+  // digitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if(_startLandingTime!=0){
     if (millis()-_startLandingTime > RELEASING_TIME_THRE){
@@ -113,7 +113,7 @@ void Cansat::running(){
     leftMotor.setSpeedAt(190*(1-_bodyAngle/180));
   }
   */
-  judgeGoal();
+//  judgeGoal();
 }
 
 void Cansat::whichWay2Go(float lat, float lon, float deg){
