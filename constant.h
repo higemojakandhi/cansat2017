@@ -7,6 +7,7 @@
 #ifndef _CONSTANT_H_
 #define _CONSTANT_H_
 
+#define PIN_INTERRUPT 2
 #define PIN_RIGHT_MOTOR_FIN 3
 #define PIN_RIGHT_MOTOR_RIN 4
 #define PIN_LEFT_MOTOR_FIN 9
@@ -22,8 +23,8 @@
 #define PIN_GPS_TX 18
 
 #define PIN_RELEASING 13
-#define PIN_RELEASING_XBEE1 32
-#define PIN_RELEASING_XBEE2 34
+#define PIN_RELEASING_XBEE1 23
+#define PIN_RELEASING_XBEE2 25
 
 
 // SEQUENCE
@@ -40,7 +41,7 @@
 // THRESHOLD
 #define PRE2FLY_THRE 100              // キャリア格納判定用　（光センサの閾値）
 #define FLY2DROP_THRE 100             // 放出判定用　　　　　（光センサの閾値）
-#define RELEASING_TIME_THRE 10000     // スタック防止機構 稼働時間の閾値 [ms]
+#define RELEASING_TIME_THRE 5000     // スタック防止機構 稼働時間の閾値 [ms]
 #define LANDING_TIME_THRE 180000       // 着地検知の冗長系：時間でシークエンス移行
 
 #define ReleaseTime_thre  15000       // パラ分離時間の閾値 [ms]
@@ -55,7 +56,7 @@
 
 #define ANGLE_THRE 20
 
-#define ACCELZ_THRE 11
+#define ACCELZ_THRE 1
 #define GYROX_THRE 10
 #define GYROY_THRE 10
 #define LANDING_TIME_THRE 180000

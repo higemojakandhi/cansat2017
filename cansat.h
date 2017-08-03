@@ -22,6 +22,7 @@ public:
   Cansat();
   ~Cansat();
   void setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
+  void setGoal(float destLat, float destLon);
 
   // Objects
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
@@ -32,7 +33,7 @@ public:
   OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
   Radio radio;
   // I2C 通信 (Pin番号の指定いらない)
-  NineAxis nineaxis;
+  NineAxis nineaxis = NineAxis(PIN_INTERRUPT);
 
   // Functions
   void preparing();

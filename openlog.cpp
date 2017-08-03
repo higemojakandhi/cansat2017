@@ -25,8 +25,8 @@ void OpenLog::init(HardwareSerial* serial){
   gotoCommandMode();
   createFile(_fileName);
   Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");
-  _serial->print("Time[ms], State, Lat, Lon, numSat, PosAccuracy, alt, ");
-  _serial->println("accX, accY, accZ, gyroX, gyroY, gyroZ, Pitch, Roll, Yaw, Deg, light");
+  _serial->print("Time[ms], State, Light, numSat, PosAccuracy, alt, Lat, Lon, ");
+  _serial->println("accX, accY, accZ, gyroX, gyroY, gyroZ, magX, magY, magZ, magBiasX, magBiasY, magBiasZ, Pitch, Roll, Yaw");
 }
 
 void OpenLog::reset(){
