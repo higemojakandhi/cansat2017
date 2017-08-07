@@ -47,6 +47,7 @@ public:
   void judgeIdling2Running();
   void judgeStucking2Running();
   void whichWay2Go(float lat, float lon, float deg);
+  void whichDirection(float deg);
 
   void judgeIdling();
   void judgeStucking();
@@ -72,6 +73,7 @@ public:
   float _distance;
 
   int _flagLandingTime;
+  int _flagXBeeReleasingTime;
 
   int _countPreLightLoop;
   int _countFlyLightLoop;
@@ -79,6 +81,8 @@ public:
 
   int _direct;
   int _bodyAngle;
+  float _bodyLat;
+  float _bodyLon;
 };
 
 #endif

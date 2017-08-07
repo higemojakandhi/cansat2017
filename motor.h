@@ -16,8 +16,10 @@ public:
   void setSpeedAt(int v);
   void goBack(int v);
   void stop();
+  void stopSlowly();
   void breaking();
 
+  int _velocity;
   int _pinMotorFin;
   int _pinMotorRin;
 };

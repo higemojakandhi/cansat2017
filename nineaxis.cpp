@@ -14,7 +14,6 @@ NineAxis::~NineAxis(){
 
 void NineAxis::init(){
   Wire.begin();
-  //  TWBR = 12;  // 400 kbit/sec I2C speed
 
   // Set up the interrupt pin, its set as active high, push-pull
   pinMode(_pinInterrupt, INPUT);
@@ -64,10 +63,15 @@ void NineAxis::init(){
     byte d = readByte(AK8963_ADDRESS, WHO_AM_I_AK8963);  // Read WHO_AM_I register for AK8963
     Serial.print("AK8963 "); Serial.print("I AM "); Serial.print(d, HEX); Serial.print(" I should be "); Serial.println(0x48, HEX);
 
+    analogWrite(PIN_LED_BLUE, 255);
+    analogWrite(PIN_LED_GREEN, 255);
+    analogWrite(PIN_LED_RED, 0);
     delay(1000);
 
     // Get magnetometer calibration from AK8963 ROM
     initAK8963(magCalibration); Serial.println("AK8963 initialized for active data mode...."); // Initialize device for active mode read of magnetometer
+    getAres();
+    getGres();
     getMres();
     // これは毎回キャリブレーションするときに実行．
     // 同じ場所で常にやるときは，magBiasに事前に値を設定する．
@@ -101,23 +105,18 @@ void NineAxis::readNineAxisValue(){
   // If intPin goes high, all data registers have new data
   if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {  // On interrupt, check if data ready interrupt
     readAccelData(accelCount);  // Read the x/y/z adc values
-    getAres();
-
     // Now we'll calculate the accleration value into actual g's
     ax = (float)accelCount[0]*aRes; // - accelBias[0];  // get actual g value, this depends on scale being set
     ay = (float)accelCount[1]*aRes; // - accelBias[1];
     az = (float)accelCount[2]*aRes; // - accelBias[2];
 
     readGyroData(gyroCount);  // Read the x/y/z adc values
-    getGres();
-
     // Calculate the gyro value into actual degrees per second
     gx = (float)gyroCount[0]*gRes;  // get actual gyro value, this depends on scale being set
     gy = (float)gyroCount[1]*gRes;
     gz = (float)gyroCount[2]*gRes;
 
     readMagData(magCount);  // Read the x/y/z adc values
-    getMres();
     //    magbias[0] = +1466.61;  // User environmental x-axis correction in milliGauss, should be automatically calculated
     //    magbias[1] = +2559.81;  // User environmental x-axis correction in milliGauss
     //    magbias[2] = +750.68;  // User environmental x-axis correction in milliGauss
@@ -127,8 +126,13 @@ void NineAxis::readNineAxisValue(){
     mx = (float)magCount[0]*mRes*magCalibration[0] - magBias[0];  // get actual magnetometer value, this depends on scale being set
     my = (float)magCount[1]*mRes*magCalibration[1] - magBias[1];
     mz = (float)magCount[2]*mRes*magCalibration[2] - magBias[2];
-  }
 
+    // Declination of 7.39 Degrees from True "North Pole" @矢上
+    deg = atan2(my,mx)*180/PI + 7.39;
+    if(deg>180){
+      deg -= 360;
+    }
+  }
 
   Now = micros();
   deltat = ((Now - lastUpdate)/1000000.0f); // set integration time by time elapsed since last filter update
@@ -147,83 +151,34 @@ void NineAxis::readNineAxisValue(){
   MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f,  my,  mx, mz);
   //  MahonyQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f, my, mx, mz);
 
-
   if (!AHRS) {
     delt_t = millis() - count;
     if(delt_t > 500) {
-
-      if(SerialDebug) {
-        // Print acceleration values in milligs!
-        //    Serial.print("X-acceleration: "); Serial.print(1000*ax); Serial.print(" mg ");
-        //    Serial.print("Y-acceleration: "); Serial.print(1000*ay); Serial.print(" mg ");
-        //    Serial.print("Z-acceleration: "); Serial.print(1000*az); Serial.println(" mg ");
-        //
-        //    // Print gyro values in degree/sec
-        //    Serial.print("X-gyro rate: "); Serial.print(gx, 3); Serial.print(" degrees/sec ");
-        //    Serial.print("Y-gyro rate: "); Serial.print(gy, 3); Serial.print(" degrees/sec ");
-        //    Serial.print("Z-gyro rate: "); Serial.print(gz, 3); Serial.println(" degrees/sec");
-        //
-        //    // Print mag values in degree/sec
-        //    Serial.print("X-mag field: "); Serial.print(mx); Serial.print(" mG ");
-        //    Serial.print("Y-mag field: "); Serial.print(my); Serial.print(" mG ");
-        //    Serial.print("Z-mag field: "); Serial.print(mz); Serial.println(" mG");
-
-        tempCount = readTempData();  // Read the adc values
-        temperature = ((float) tempCount) / 333.87 + 21.0; // Temperature in degrees Centigrade
-        // Print temperature in degrees Centigrade
-        Serial.print("Temperature is ");  Serial.print(temperature, 1);  Serial.println(" degrees C"); // Print T values to tenths of s degree C
-      }
-
       count = millis();
     }
   }else{
-
     // Serial print and/or display at 0.5 s rate independent of data rates
     delt_t = millis() - count;
     if (delt_t > 50) { // update LCD once per half-second independent of read rate
-
-      if(SerialDebug) {
-        //    Serial.print("ax = "); Serial.print((int)1000*ax);
-        //    Serial.print(" ay = "); Serial.print((int)1000*ay);
-        //    Serial.print(" az = "); Serial.print((int)1000*az); Serial.println(" mg");
-        //    Serial.print("gx = "); Serial.print( gx, 2);
-        //    Serial.print(" gy = "); Serial.print( gy, 2);
-        //    Serial.print(" gz = "); Serial.print( gz, 2); Serial.println(" deg/s");
-        //    Serial.print("mx = "); Serial.print( (int)mx );
-        //    Serial.print(" my = "); Serial.print( (int)my );
-        //    Serial.print(" mz = "); Serial.print( (int)mz ); Serial.println(" mG");
-        //
-        //    Serial.print("q0 = "); Serial.print(q[0]);
-        //    Serial.print(" qx = "); Serial.print(q[1]);
-        //    Serial.print(" qy = "); Serial.print(q[2]);
-        //    Serial.print(" qz = "); Serial.println(q[3]);
-      }
-
       // Z軸は下方向 (航空機の座標と同じ)
       yaw   = atan2(2.0f * (q[1] * q[2] + q[0] * q[3]), q[0] * q[0] + q[1] * q[1] - q[2] * q[2] - q[3] * q[3]);
       pitch = -asin(2.0f * (q[1] * q[3] - q[0] * q[2]));
       roll  = atan2(2.0f * (q[0] * q[1] + q[2] * q[3]), q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3]);
       pitch *= 180.0f / PI;
       yaw   *= 180.0f / PI;
-      //    yaw   = 13.8; // Declination at Danville, California is 13 degrees 48 minutes and 47 seconds on 2014-04-04
-      // yaw   += 1.34;
-      /* Declination at Potheri, Chennail ,India  Model Used:	IGRF12	Help
+      roll  *= 180.0f / PI;
+      // yaw   -= 13.8; // Declination at Danville, California is 13 degrees 48 minutes and 47 seconds on 2014-04-04
+      // yaw   += 1.34; // Declination at Potheri, Chennail ,India  Model Used:	IGRF12	Help
+       /*
       Latitude:	12.823640° N
       Longitude:	80.043518° E
       Date	Declination
-      2016-04-09	1.34° W  changing by  0.06° E per year (+ve for west )*/
+      2016-04-09	1.34° W  changing by  0.06° E per year (+ve for west )
+      */
       yaw += 7.39; // 矢上キャンパス
-      roll  *= 180.0f / PI;
-      yaw += 180;
-      pitch += 180;
 
-
-      // Serial.print("Yaw, Pitch, Roll: ");
-      // Serial.print(180, 2);
-      // Serial.print(", ");
-      // Serial.print(pitch, 2);
-      // Serial.print(", ");
-      // Serial.println(roll, 2);
+      tempCount = readTempData();  // Read the adc values
+      temperature = ((float) tempCount) / 333.87 + 21.0; // Temperature in degrees Centigrade
 
       count = millis();
       sumCount = 0;
@@ -419,7 +374,7 @@ void NineAxis::magcalMPU9250(float * dest1, float * dest2)
 
   Serial.println("Mag Calibration: Wave device in a figure eight until done!");
 
-  sample_count = 128;
+  sample_count = 256;
   for(ii = 0; ii < sample_count; ii++) {
     readMagData(mag_temp);  // Read the mag data
     for (int jj = 0; jj < 3; jj++) {

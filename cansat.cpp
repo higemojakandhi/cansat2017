@@ -15,11 +15,12 @@ Cansat::Cansat(){
   _countPreLightLoop=0;
   _countFlyLightLoop=0;
   _countDrop2LandLoop=0;
+  _flagXBeeReleasingTime=0;
   pinMode(PIN_RELEASING, OUTPUT);
   pinMode(PIN_LED_BLUE, OUTPUT);
   pinMode(PIN_LED_GREEN, OUTPUT);
   pinMode(PIN_LED_RED, OUTPUT);
-  // pinMode(PIN_RELEASING_XBEE2, OUTPUT);
+  pinMode(PIN_RELEASING_XBEE2, OUTPUT);
 }
 
 Cansat::~Cansat(){
@@ -40,6 +41,9 @@ void Cansat::setGoal(float destLat, float destLon){
 void Cansat::preparing(){
   // このループ入った時の時間を保存．
   if(_startPreparingTime==0) _startPreparingTime = millis();
+  analogWrite(PIN_LED_BLUE, 0);
+  analogWrite(PIN_LED_GREEN, 0);
+  analogWrite(PIN_LED_RED, 0);
   // モータは停止
   rightMotor.stop();
   leftMotor.stop();
@@ -47,13 +51,13 @@ void Cansat::preparing(){
   // Flyingのジャッジ
   if(light._lightValue < PRE2FLY_THRE) {
     _countPreLightLoop++;
-    if (_countPreLightLoop > COUNT_PRE2FLY_LOOP_THRE) _state=FLYING;
+    if (_countPreLightLoop > COUNT_PRE2FLY_LOOP_THRE) _state=RUNNING; //_state=FLYING;
   }else{
     _countPreLightLoop=0;
   }
 }
 
-void Cansat::flying(){
+void Cansat::flying(){ //1
   // このループ入った時の時間を保存．
   if(_startFlyingTime==0){
     _startFlyingTime = millis();
@@ -79,7 +83,7 @@ void Cansat::flying(){
   }
 }
 
-void Cansat::dropping(){
+void Cansat::dropping(){ //2
   // このループ入った時の時間を保存．
   if(_startDroppingTime==0) _startDroppingTime = millis();
   // 光ピコピコ
@@ -88,7 +92,7 @@ void Cansat::dropping(){
   analogWrite(PIN_LED_RED, 0);
 
   // z軸加速度とx,yジャイロがある閾値以下の場合は着地
-  if(nineaxis.az <ACCELZ_THRE && nineaxis.gx <GYROX_THRE && nineaxis.gy <GYROY_THRE){
+  if(fabs(nineaxis.az) <ACCELZ_THRE && fabs(nineaxis.gx) <GYROX_THRE && fabs(nineaxis.gy) <GYROY_THRE){
     _countDrop2LandLoop++;
     if(_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE) _state=LANDING;
   }else{
@@ -100,7 +104,7 @@ void Cansat::dropping(){
   }
 }
 
-void Cansat::landing(){
+void Cansat::landing(){ //3
   // このループ入った時の時間を保存．
   if(_startLandingTime==0) _startLandingTime = millis();
   // Serial.print("Start Land Time: "); Serial.print(_startLandingTime); Serial.print(", "); Serial.print(millis());
@@ -110,7 +114,7 @@ void Cansat::landing(){
   analogWrite(PIN_LED_RED, 255);
 
   // Landing検知したらReleasePin焼き切る
-  digitalWrite(PIN_RELEASING, HIGH);
+ digitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if(_startLandingTime!=0){
     if (millis()-_startLandingTime > RELEASING_TIME_THRE){
@@ -121,23 +125,59 @@ void Cansat::landing(){
   }
 }
 
-void Cansat::running(){
+void Cansat::running(){ //4
   // このループ入った時の時間を保存
   if(_startRunningTime==0) _startRunningTime = millis();
-  // 動作
-  whichWay2Go(gps._lat, gps._lon, nineaxis.yaw);
-  // タイヤ動かす．
-  if(_direct==0){
-    rightMotor.setSpeedAt(255);
-    leftMotor.setSpeedAt(255);
-  }else if(_direct==1){
-    rightMotor.setSpeedAt(190*(1-_bodyAngle/180));
-    leftMotor.setSpeedAt(255);
-  }else if(_direct==-1){
-    rightMotor.setSpeedAt(255);
-    leftMotor.setSpeedAt(190*(1-_bodyAngle/180));
+  // GPSが入ってこなかったらとりあえずうごかない // 一応1以下にした
+  // if(gps._lat==1 && gps._lon==1){
+  if(_state!=RUNNING){
+    leftMotor.stop();
+    rightMotor.stop();
+    analogWrite(PIN_LED_BLUE, 255); delay(500);
+    analogWrite(PIN_LED_GREEN, 255); delay(500);
+    analogWrite(PIN_LED_RED, 255); delay(500);
+    analogWrite(PIN_LED_BLUE, 0); delay(500);
+    analogWrite(PIN_LED_GREEN, 0); delay(500);
+    analogWrite(PIN_LED_RED, 0); delay(500);
+  }else{
+    // 10秒経ったらXbeeおとす
+//    if(millis()-_startRunningTime>XBEE_DROP_THRE && _flagXBeeReleasingTime==0){
+    if(_state!=RUNNING){
+      leftMotor.stopSlowly();
+      rightMotor.stopSlowly();
+      delay(1000);
+      digitalWrite(PIN_RELEASING_XBEE2, HIGH);
+      delay(15000);
+      digitalWrite(PIN_RELEASING_XBEE2, LOW);
+      _flagXBeeReleasingTime=1;
+    }else{
+      // 通常運転
+      // whichWay2Go(gps._lat, gps._lon, nineaxis.deg);
+      whichDirection(nineaxis.deg);
+      // タイヤ動かす．
+      if(_direct==0){
+        rightMotor.setSpeedAt(255);
+        leftMotor.setSpeedAt(255);
+      }else if(_direct==1){ //右
+        rightMotor.setSpeedAt(170*(1-_bodyAngle/180));
+        leftMotor.setSpeedAt(255);
+      }else if(_direct==-1){ //左
+        rightMotor.setSpeedAt(255);
+        leftMotor.setSpeedAt(170*(1-_bodyAngle/180));
+      }
+    }
   }
-  judgeGoal();
+  // judgeGoal();
+}
+
+void Cansat::whichDirection(float deg){
+  if(fabs(deg)<20){
+    _direct=0;
+  }else if(deg>=0){
+    _direct=1;
+  }else{
+    _direct=-1;
+  }
 }
 
 void Cansat::whichWay2Go(float lat, float lon, float deg){
@@ -147,15 +187,14 @@ void Cansat::whichWay2Go(float lat, float lon, float deg){
   float deltaLon = (_destLat-lat)*100000*100000;
   _distance = sqrt(pow(deltaLat,2)+pow(deltaLon,2));
   // 機体座標に変換
-  float bodyLat = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg*180/M_PI);
-  float bodyLon = deltaLon*sin(deg/180*M_PI)-deltaLat*cos(deg*180/M_PI);
+  _bodyLat = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg*180/M_PI);
+  _bodyLon = deltaLon*sin(deg/180*M_PI)-deltaLat*cos(deg*180/M_PI);
 
   // 機体座標系でのゴールまでの角度を計算
-  _bodyAngle=0;
-  if(bodyLat>0){
-    _bodyAngle = fabs(atan(bodyLon/bodyLat))*180/M_PI;
-  }else if(bodyLat<0){
-    _bodyAngle = 180-fabs(atan(bodyLon/bodyLat))*180/M_PI;
+  if(_bodyLat>0){
+    _bodyAngle = fabs(atan(_bodyLon/_bodyLat))*180/M_PI;
+  }else if(_bodyLat<0){
+    _bodyAngle = 180-fabs(atan(_bodyLon/_bodyLat))*180/M_PI;
   }else{
     _bodyAngle=90;
   }
@@ -163,10 +202,10 @@ void Cansat::whichWay2Go(float lat, float lon, float deg){
   if(_bodyAngle<ANGLE_THRE){
     _direct=0; //真っ直ぐ
   }else{
-    if(bodyLon>=0){
+    if(_bodyLon>=0){
       _direct=1; //右
     }else{
-      _direct=-1; //右
+      _direct=-1; //左
     }
   }
 }
@@ -195,7 +234,7 @@ void Cansat::judgeStucking(){
 void Cansat::judgeGoal(){
   long dLat = _destLat - gps._lat;
   long dLon = _destLon - gps._lon;
-  if(abs(dLat)<=GOAL_THRE && abs(dLon)<=GOAL_THRE){
+  if(abs(dLat*100000)<=GOAL_THRE && abs(dLon*100000)<=GOAL_THRE){
     _state=GOAL;
   }
 }

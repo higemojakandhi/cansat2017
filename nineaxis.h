@@ -11,6 +11,7 @@
 #include "Arduino.h"
 #include <SPI.h>
 #include <Wire.h>
+#include "constant.h"
 
 // See also MPU-9250 Register Map and Descriptions, Revision 4.0, RM-MPU-9250A-00, Rev. 1.4, 9/9/2013 for registers not listed in
 // above document; the MPU9250 and MPU9150 are virtually identical but the latter has a different register map
@@ -207,10 +208,10 @@ public:
   void readBytes(uint8_t address, uint8_t subAddress, uint8_t count, uint8_t * dest);
   uint8_t readByte(uint8_t address, uint8_t subAddress);
   void readNineAxisValue();
-
+  
   // Specify sensor full scale
   uint8_t Gscale = GFS_250DPS;
-  uint8_t Ascale = AFS_2G;
+  uint8_t Ascale = AFS_16G;
   uint8_t Mscale = MFS_16BITS; // Choose either 14-bit or 16-bit magnetometer resolution
   uint8_t Mmode = 0x02;        // 2 for 8 Hz, 6 for 100 Hz continuous magnetometer data read
   float aRes, gRes, mRes;      // scale resolutions per LSB for the sensors
@@ -233,7 +234,7 @@ public:
 
   uint32_t delt_t = 0; // used to control display output rate
   uint32_t count = 0, sumCount = 0; // used to control display output rate
-  float pitch, yaw, roll;
+  float pitch, yaw, roll, deg;
   float deltat = 0.0f, sum = 0.0f;        // integration interval for both filter schemes
   uint32_t lastUpdate = 0, firstUpdate = 0; // used to calculate integration interval
   uint32_t Now = 0;        // used to calculate integration interval
