@@ -20,6 +20,7 @@ Cansat cansat;
 // date = 20170728;
 // time = 014430;
 // numFile = 100;
+String dataHeader = "Time[ms], Time, State, Light, numSat, PosAccuracy, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg";
 
 /** 初期化関数
 * 全てのセンサーがしっかりセットアップされるまで無限に待つ
@@ -112,6 +113,7 @@ void loop() {
   // 送信用のデータ作成
   String alldata = "";
   alldata += String(millis()) + ", ";
+  alldata += String(cansat.gps._hour) + "/" + String(cansat.gps._minute) + "/" + String(cansat.gps._second) + ", ";
   alldata += String(cansat._state) + ", ";
   alldata += String(cansat.light._lightValue) + ", ";
   alldata += String(cansat.gps._satNum) + ", ";
@@ -130,8 +132,7 @@ void loop() {
   alldata += String(cansat.nineaxis.yaw) + ", ";
   alldata += String(cansat.nineaxis.deg) + ", ";
 
-  Serial.print("Time[ms], State, Light, numSat, PosAccuracy, alt, Lat, Lon, ");
-  Serial.println("accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg");
+  Serial.println(dataHeader);
   Serial.println(alldata);
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.openlog.saveDataOnSD(alldata);

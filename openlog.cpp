@@ -20,14 +20,18 @@ void OpenLog::init(HardwareSerial* serial){
   reset();
 
   // Creating New File
-  int numLog=100;
+  int numLog=1;
   sprintf(_logFile, "log%03d.txt", numLog);
+  while(!isExist(_logFile)){
+    numLog++;
+    sprintf(_logFile, "log%03d.txt", numLog);
+  }
   gotoCommandMode();
   createFile(_logFile);
   Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");
-  _serial->print("Time[ms], State, Light, numSat, PosAccuracy, alt, Lat, Lon, ");
+  _serial->print("Time[ms], Time, State, Light, numSat, PosAccuracy, alt, Lat, Lon, ");
   _serial->println("accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg");
-
+  
   sprintf(_errorFile, "err%03d.txt", numLog);
   gotoCommandMode();
   createFile(_errorFile);
@@ -121,4 +125,29 @@ void OpenLog::gotoCommandMode() {
   _serial->write(26);
   // Serial.println("after Command");
   waitUntilReady2ReceiveCommand();
+}
+
+bool OpenLog::isExist(char *fileName){
+  _serial->print("size ");
+  _serial->print(fileName);
+  _serial->write(13);
+
+  while(1){
+    if(_serial->available()){
+      char c = _serial->read();
+      Serial.println(c);
+      if(c == '\r') break;
+    }
+  }
+
+  while(1){
+    while(_serial->available()){
+      char c = _serial->read();
+      Serial.println(c);
+      if(c== '-'){ // このファイル名は使われていませんということ！
+        return true;
+      }
+    }
+    return false;
+  }
 }

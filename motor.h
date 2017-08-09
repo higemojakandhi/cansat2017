@@ -15,8 +15,10 @@ public:
   ~Motor();
   void setSpeedAt(int v);
   void goBack(int v);
+  // 物理的に回路を離す
   void stop();
   void stopSlowly();
+  // 電圧を加えた続けてブレーキ
   void breaking();
 
   int _velocity;

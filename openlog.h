@@ -25,6 +25,7 @@ public:
   void gotoCommandMode();
   void createFile(char *fileName);
   void appendFile(char *fileName);
+  bool isExist(char *fileName);
 
   HardwareSerial* _serial;
   int _pinOpenLogReset;
