@@ -55,6 +55,7 @@ void setup() {
 /** ループ関数
 */
 void loop() {
+  cansat.openlog.openErrorFile();
   // センサー値取得
   // それぞれのセンサーにOpenLogを渡し，errorメッセージを記録
   // 位置が取れない場合どうする？ flag渡してgpsが不可ならpeed/degからカルマンフィルタで位置を推定

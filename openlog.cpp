@@ -21,12 +21,17 @@ void OpenLog::init(HardwareSerial* serial){
 
   // Creating New File
   int numLog=100;
-  sprintf(_fileName, "log%03d.txt", numLog);
+  sprintf(_logFile, "log%03d.txt", numLog);
   gotoCommandMode();
-  createFile(_fileName);
+  createFile(_logFile);
   Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");
   _serial->print("Time[ms], State, Light, numSat, PosAccuracy, alt, Lat, Lon, ");
   _serial->println("accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg");
+
+  sprintf(_errorFile, "err%03d.txt", numLog);
+  gotoCommandMode();
+  createFile(_errorFile);
+  Serial.println("Error File Created!"); _serial->println("Error File Created!");
 }
 
 void OpenLog::reset(){
@@ -36,10 +41,20 @@ void OpenLog::reset(){
   delay(3000);
 }
 
+void OpenLog::openErrorFile(){
+  gotoCommandMode();
+  appendFile(_errorFile);
+}
+
+void OpenLog::saveErrorOnSD(String error){
+  _serial->println(error);
+}
+
 void OpenLog::saveDataOnSD(String alldata){
+  gotoCommandMode();
+  appendFile(_logFile);
   //OpenLog is now waiting for characters and will record them to the new file
   _serial->println(alldata);
-  Serial.println(alldata);
 }
 
 void OpenLog::createFile(char *fileName) {
@@ -51,6 +66,14 @@ void OpenLog::createFile(char *fileName) {
   waitUntilReady2ReceiveCommand();
 
   // Append New File
+  _serial->print("append ");
+  _serial->print(fileName);
+  _serial->write(13); //This is \r
+  waitUntilReady2Log();
+  //OpenLog is now waiting for characters and will record them to the new file
+}
+
+void OpenLog::appendFile(char *fileName){
   _serial->print("append ");
   _serial->print(fileName);
   _serial->write(13); //This is \r

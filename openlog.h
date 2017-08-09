@@ -15,6 +15,8 @@ public:
   OpenLog(int pinOpenLogReset);
   ~OpenLog();
   void init(HardwareSerial* serial);
+  void openErrorFile();
+  void saveErrorOnSD(String error);
   void saveDataOnSD(String alldata);
 
   void reset();
@@ -27,7 +29,8 @@ public:
   HardwareSerial* _serial;
   int _pinOpenLogReset;
 
-  char _fileName[12];
+  char _logFile[12];
+  char _errorFile[12];
 };
 
 #endif
