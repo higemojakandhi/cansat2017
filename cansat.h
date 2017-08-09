@@ -22,6 +22,7 @@ public:
   Cansat();
   ~Cansat();
   void setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
+  void setGoal(float destLat, float destLon);
 
   // Objects
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
@@ -32,7 +33,7 @@ public:
   OpenLog openlog = OpenLog(PIN_OPENLOG_RESET);
   Radio radio;
   // I2C 通信 (Pin番号の指定いらない)
-  NineAxis nineaxis;
+  NineAxis nineaxis = NineAxis(PIN_INTERRUPT);
 
   // Functions
   void preparing();
@@ -46,6 +47,7 @@ public:
   void judgeIdling2Running();
   void judgeStucking2Running();
   void whichWay2Go(float lat, float lon, float deg);
+  void whichDirection(float deg);
 
   void judgeIdling();
   void judgeStucking();
@@ -71,6 +73,7 @@ public:
   float _distance;
 
   int _flagLandingTime;
+  int _flagXBeeReleasingTime;
 
   int _countPreLightLoop;
   int _countFlyLightLoop;
@@ -78,6 +81,8 @@ public:
 
   int _direct;
   int _bodyAngle;
+  float _bodyLat;
+  float _bodyLon;
 };
 
 #endif

@@ -33,6 +33,9 @@ void setup() {
   SerialGps.begin(9600);
   SerialOpenLog.begin(9600);
   SerialRadio.begin(9600);
+  analogWrite(PIN_LED_BLUE, 255);
+  analogWrite(PIN_LED_GREEN, 255);
+  analogWrite(PIN_LED_RED, 255);
   // それぞれに bool setSerialで確認
   // if(!cansat.openlog.setSerial()) while(1)
   // while(!cansat.gps.setSerial()){
@@ -40,8 +43,13 @@ void setup() {
   //  Serial.println(F("error: GPS not available"));
   // }
   cansat.setSerial(&SerialGps, &SerialOpenLog, &SerialRadio);
+  cansat.setGoal(35.742628, 140.011140);
+  analogWrite(PIN_LED_BLUE, 0);
+  analogWrite(PIN_LED_GREEN, 0);
+  analogWrite(PIN_LED_RED, 0);
   // それぞれ初期化
   Serial.println("All Set!");
+  delay(1000);
 }
 
 /** ループ関数
@@ -91,6 +99,11 @@ void loop() {
       case GOAL: // 7
         cansat.goal();
         break;
+      case DEBUG: //10
+        cansat.rightMotor.stop();
+        cansat.leftMotor.stop();
+        digitalWrite(PIN_RELEASING, LOW);
+        digitalWrite(PIN_RELEASING_XBEE2, LOW);
       default:
         break;
     }
@@ -99,28 +112,28 @@ void loop() {
   String alldata = "";
   alldata += String(millis()) + ", ";
   alldata += String(cansat._state) + ", ";
-  alldata += String(cansat.gps._lat) + ", ";
-  alldata += String(cansat.gps._lon) + ", ";
+  alldata += String(cansat.light._lightValue) + ", ";
   alldata += String(cansat.gps._satNum) + ", ";
   alldata += String(cansat.gps._posAccuracy) + ", ";
   alldata += String(cansat.gps._alt) + ", ";
-  alldata += String(cansat.nineaxis._accelX) + ", ";
-  alldata += String(cansat.nineaxis._accelY) + ", ";
-  alldata += String(cansat.nineaxis._accelZ) + ", ";
-  alldata += String(cansat.nineaxis._gyroX) + ", ";
-  alldata += String(cansat.nineaxis._gyroX) + ", ";
-  alldata += String(cansat.nineaxis._gyroZ) + ", ";
-  alldata += String(cansat.nineaxis._pitch) + ", ";
-  alldata += String(cansat.nineaxis._roll) + ", ";
-  alldata += String(cansat.nineaxis._yaw) + ", ";
-  alldata += String(cansat.nineaxis._deg) + ", ";
-  alldata += String(cansat.light._lightValue) + ", ";
+  alldata += String(cansat.gps._lat*1000000) + ", ";
+  alldata += String(cansat.gps._lon*1000000) + ", ";
+  alldata += String(cansat.nineaxis.ax) + ", ";
+  alldata += String(cansat.nineaxis.ay) + ", ";
+  alldata += String(cansat.nineaxis.az) + ", ";
+  alldata += String(cansat.nineaxis.gx) + ", ";
+  alldata += String(cansat.nineaxis.gy) + ", ";
+  alldata += String(cansat.nineaxis.gz) + ", ";
+  alldata += String(cansat.nineaxis.pitch) + ", ";
+  alldata += String(cansat.nineaxis.roll) + ", ";
+  alldata += String(cansat.nineaxis.yaw) + ", ";
+  alldata += String(cansat.nineaxis.deg) + ", ";
 
-  Serial.print("Time[ms], State, Lat, Lon, numSat, PosAccuracy, alt, ");
-  Serial.println("accX, accY, accZ, gyroX, gyroY, gyroZ, Pitch, Roll, Yaw, Deg, light");
+  Serial.print("Time[ms], State, Light, numSat, PosAccuracy, alt, Lat, Lon, ");
+  Serial.println("accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg");
   Serial.println(alldata);
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.openlog.saveDataOnSD(alldata);
   // Xbeeに同じデータを送信
-//  if(cansat._state!=FLYING) cansat.radio.send(alldata);
+ if(cansat._state!=FLYING) cansat.radio.send(alldata);
 }
