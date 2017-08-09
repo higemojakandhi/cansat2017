@@ -42,14 +42,14 @@
 // THRESHOLD
 #define PRE2FLY_THRE 100              // キャリア格納判定用　（光センサの閾値）
 #define FLY2DROP_THRE 100             // 放出判定用　　　　　（光センサの閾値）
-#define RELEASING_TIME_THRE 10000     // スタック防止機構 稼働時間の閾値 [ms]
+#define RELEASING_TIME_THRE 15000     // スタック防止機構 稼働時間の閾値 [ms]
 #define LANDING_TIME_THRE 180000       // 着地検知の冗長系：時間でシークエンス移行
 
 #define ReleaseTime_thre  15000       // パラ分離時間の閾値 [ms]
 #define EvasionTime_thre  10000
 #define GoForward_thre    20000       // 防止機構の稼働時間経過 -> この時間 [ms] まっすぐ進む
 #define GoalLEDs_thre     20000       // ゴール後のLED点灯時間
-#define COUNT_PRE2FLY_LOOP_THRE 30
+#define COUNT_PRE2FLY_LOOP_THRE 100
 #define COUNT_FLY2DROP_LOOP_THRE 100
 #define COUNT_DROP2LAND_LOOP_THRE 200
 #define XBEE_DROP_THRE 10000

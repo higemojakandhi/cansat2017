@@ -187,8 +187,8 @@ void Cansat::whichWay2Go(float lat, float lon, float deg){
   float deltaLon = (_destLat-lat)*100000*100000;
   _distance = sqrt(pow(deltaLat,2)+pow(deltaLon,2));
   // 機体座標に変換
-  _bodyLat = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg*180/M_PI);
-  _bodyLon = deltaLon*sin(deg/180*M_PI)-deltaLat*cos(deg*180/M_PI);
+  _bodyLat = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg/180*M_PI);
+  _bodyLon = deltaLon*sin(deg/180*M_PI)-deltaLat*cos(deg/180*M_PI);
 
   // 機体座標系でのゴールまでの角度を計算
   if(_bodyLat>0){
