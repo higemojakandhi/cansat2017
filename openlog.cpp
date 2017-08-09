@@ -144,10 +144,9 @@ bool OpenLog::isExist(char *fileName){
     while(_serial->available()){
       char c = _serial->read();
       Serial.println(c);
-      if(c== '-'){ // このファイル名は使われていませんということ！
-        return true;
-      }
+      if(c == '-') return true;// このファイル名は使われていませんということ！
+      if(c == '>') break;
     }
-    return false;
   }
+  return false;
 }
