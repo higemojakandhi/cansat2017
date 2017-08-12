@@ -112,8 +112,8 @@ void loop() {
 
   // 送信用のデータ作成
   String alldata = "";
+  alldata += String(cansat.gps._hour) + String(cansat.gps._minute) + String(cansat.gps._second) + ", ";
   alldata += String(millis()) + ", ";
-  alldata += String(cansat.gps._hour) + "/" + String(cansat.gps._minute) + "/" + String(cansat.gps._second) + ", ";
   alldata += String(cansat._state) + ", ";
   alldata += String(cansat.light._lightValue) + ", ";
   alldata += String(cansat.gps._satNum) + ", ";

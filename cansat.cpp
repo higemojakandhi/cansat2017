@@ -51,7 +51,7 @@ void Cansat::preparing(){
   // Flyingのジャッジ
   if(light._lightValue < PRE2FLY_THRE) {
     _countPreLightLoop++;
-    if (_countPreLightLoop > COUNT_PRE2FLY_LOOP_THRE) _state=RUNNING; //_state=FLYING;
+    if (_countPreLightLoop > COUNT_PRE2FLY_LOOP_THRE) _state=PREPARING; //_state=RUNNING; //_state=FLYING;
   }else{
     _countPreLightLoop=0;
   }

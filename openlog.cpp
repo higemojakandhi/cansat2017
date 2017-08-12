@@ -141,12 +141,13 @@ bool OpenLog::isExist(char *fileName){
   }
 
   while(1){
+    int flag=0;
     while(_serial->available()){
       char c = _serial->read();
-      Serial.println(c);
       if(c == '-') return true;// このファイル名は使われていませんということ！
-      if(c == '>') break;
+      if(c == '>')  flag=1; break;
     }
+    if(flag==1) break;
   }
   return false;
 }
