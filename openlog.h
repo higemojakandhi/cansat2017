@@ -14,7 +14,9 @@ class OpenLog {
 public:
   OpenLog(int pinOpenLogReset);
   ~OpenLog();
-  void init(HardwareSerial* serial);
+  void setHeader(String* header);
+  void setSerial(HardwareSerial* serial);
+  void init();
   void openErrorFile();
   void saveErrorOnSD(String error);
   void saveDataOnSD(String alldata);
@@ -28,6 +30,7 @@ public:
   bool isExist(char *fileName);
 
   HardwareSerial* _serial;
+  String* _header;
   int _pinOpenLogReset;
 
   char _logFile[12];

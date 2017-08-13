@@ -34,33 +34,29 @@
 #define LANDING 3     // ジャイロ加速度センサによる着地検知
 #define RUNNING 4     // 走行中
 #define IDLING 5      // アイドリング
-#define STUCKING 6       // スタック中
-#define GOAL 7        // 
-#define DEBUG 10
+#define STUCKING 6    // スタック中
+#define GOAL 7        // ゴール
+#define DEBUG 10      // デバッグ用にステート移行しないように停止
 
 
 // THRESHOLD
 #define PRE2FLY_THRE 100              // キャリア格納判定用　（光センサの閾値）
 #define FLY2DROP_THRE 100             // 放出判定用　　　　　（光センサの閾値）
-#define RELEASING_TIME_THRE 15000     // スタック防止機構 稼働時間の閾値 [ms]
-#define LANDING_TIME_THRE 180000       // 着地検知の冗長系：時間でシークエンス移行
+#define LANDING_TIME_THRE 180000      // 着地検知の冗長系：時間でシークエンス移行
+#define RELEASING_TIME_THRE 15000     // 分離時間
 
-#define ReleaseTime_thre  15000       // パラ分離時間の閾値 [ms]
-#define EvasionTime_thre  10000
-#define GoForward_thre    20000       // 防止機構の稼働時間経過 -> この時間 [ms] まっすぐ進む
-#define GoalLEDs_thre     20000       // ゴール後のLED点灯時間
-#define COUNT_PRE2FLY_LOOP_THRE 100
-#define COUNT_FLY2DROP_LOOP_THRE 100
-#define COUNT_DROP2LAND_LOOP_THRE 200
-#define XBEE_DROP_THRE 10000
+#define COUNT_PRE2FLY_LOOP_THRE 100   // キャリア格納判定用  (閾値以下の値になる連続の回数の閾値
+#define COUNT_FLY2DROP_LOOP_THRE 100  // 放出判定用          (閾値以上の値になる連続の回数の閾値
+#define COUNT_DROP2LAND_LOOP_THRE 200 // 着地検知用          (ジャイロ・加速度の連続の回数の閾値
+#define XBEE_DROP_THRE 10000          // Xbee分離時間
 
-#define GOAL_THRE 5
+#define GOAL_THRE 5     // 5m以内がゴール
 
-#define ANGLE_THRE 20
+#define ANGLE_THRE 20   // 目的地が角度以下なら真っ直ぐ進む
 
-#define ACCELZ_THRE 1
-#define GYROX_THRE 10
-#define GYROY_THRE 10
+#define ACCELZ_THRE 1   z方向の加速度の閾値
+#define GYROX_THRE 10   x方向のジャイロの閾値
+#define GYROY_THRE 10   y方向のジャイロの閾値
 #define LANDING_TIME_THRE 180000
 
 #endif

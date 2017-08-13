@@ -8,7 +8,7 @@
 #include <string.h>
 #include "Arduino.h"
 #include <HardwareSerial.h>
-#include "constant.h" //全ての定数はここ
+#include "constant.h" //ALL CONSANTS ARE HERE!!! ex) Pin Number
 #include "cansat.h"
 HardwareSerial & SerialGps = Serial1;// Change the name of Serial from Serial1 -> SerialGps
 HardwareSerial & SerialOpenLog = Serial2; // Change the name of Serial from Serial2 -> SerialOpenlog
@@ -16,51 +16,50 @@ HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial
 
 // cansatオブジェクト生成
 Cansat cansat;
+// 日付とファイル名は毎回指定しようと思う
+// date = 20170728;
+// time = 014430;
+// numFile = 100;
 String dataHeader = "Time[ms], Time, State, Light, numSat, PosAccuracy, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg";
 
-
-// ------------------------------------------------------------- SETUP ----------------------------------------------------------------------// 
+/** 初期化関数
+* 全てのセンサーがしっかりセットアップされるまで無限に待つ
+* 成功・失敗のメッセージは必ず吐き出すこと
+* error:
+* success:
+*/
 void setup() {
   // Serial通信開始
   Serial.begin(9600); Serial.println(F("Begin!"));
   SerialGps.begin(9600);
+  SerialOpenLog.begin(9600);
   SerialRadio.begin(9600);
-  SerialOpenLog.begin(9600);    // より早い読み取りをするには2400, 4800, 9600, 19200, 38400, 57600, and 115200
-  // Serial 渡す
-  cansat.gps.setSerial(&SerialGps);
-  cansat.radio.setSerial(SerialRadioadio);
-  cansat.openlog.setSerial(SerialOpenLog);
-  
   // OpenLogに保存するヘッダー渡す
   cansat.openlog.setHeader(&dataHeader);
-  // ゴール設定
-  cansat.setGoal(35.742628, 140.011140);
-
-  // openlog, 9軸初期化
-  cansat.openlog.init();
+  
   analogWrite(PIN_LED_BLUE, 255);
   analogWrite(PIN_LED_GREEN, 255);
   analogWrite(PIN_LED_RED, 255);
-  // 特に9軸はキャリブレーションを行う．
-  // 3色のLEDが光っている場合は地面に水平に置いて静止 (ジャイロと加速度のキャリブレーション）
-  // 2色のLEDが光っている場合は持ってぐるぐる回す     (地磁気のキャリブレーション）
-  cansat.nineaxis.init();
-  // 終わると光が消える．
+
+  cansat.setSerial(&SerialGps, &SerialOpenLog, &SerialRadio);
+  cansat.setGoal(35.742628, 140.011140);
+  
   analogWrite(PIN_LED_BLUE, 0);
   analogWrite(PIN_LED_GREEN, 0);
   analogWrite(PIN_LED_RED, 0);
   
   // それぞれ初期化
   Serial.println(F("All Set!"));
+  delay(1000);
 }
 
-
-// ------------------------------------------------------------- LOOP ----------------------------------------------------------------------// 
+/** ループ関数
+*/
 void loop() {
   cansat.openlog.openErrorFile();
+  // センサー値取得
   // それぞれのセンサーにOpenLogを渡し，errorメッセージを記録
-  
-  // 位置が取れない場合どうする？ -> 位置推定出来るほど正確なセンサーとモータではないので諦める．
+  // 位置が取れない場合どうする？ flag渡してgpsが不可ならpeed/degからカルマンフィルタで位置を推定
   cansat.gps.readGpsValue();
   // 9軸が取れない場合はどうする？ flag渡して9軸が不可ならgpsのlat/lon/speed/degから計算
   cansat.nineaxis.readNineAxisValue();

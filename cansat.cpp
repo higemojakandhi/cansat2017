@@ -26,13 +26,6 @@ Cansat::Cansat(){
 Cansat::~Cansat(){
 }
 
-void Cansat::setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio){
-  gps.setSerial(serialgps);
-  openlog.init(serialopenlog);
-  radio.setSerial(serialradio);
-  nineaxis.init();
-}
-
 void Cansat::setGoal(float destLat, float destLon){
   _destLat = destLat;
   _destLon = destLat;
@@ -107,7 +100,6 @@ void Cansat::dropping(){ //2
 void Cansat::landing(){ //3
   // このループ入った時の時間を保存．
   if(_startLandingTime==0) _startLandingTime = millis();
-  // Serial.print("Start Land Time: "); Serial.print(_startLandingTime); Serial.print(", "); Serial.print(millis());
   // 光ピコピコ
   analogWrite(PIN_LED_BLUE, 0);
   analogWrite(PIN_LED_GREEN, 0);
@@ -183,12 +175,12 @@ void Cansat::whichDirection(float deg){
 void Cansat::whichWay2Go(float lat, float lon, float deg){
   // Lon=経度=x
   // Lat=緯度=y
-  float deltaLat = (_destLat-lat)*100000*100000; // メートルに変換
-  float deltaLon = (_destLat-lat)*100000*100000;
+  float deltaLon = (_destLat-lat)*100000;
+  float deltaLat = (_destLat-lat)*100000; // メートルに変換
   _distance = sqrt(pow(deltaLat,2)+pow(deltaLon,2));
   // 機体座標に変換
-  _bodyLat = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg/180*M_PI);
-  _bodyLon = deltaLon*sin(deg/180*M_PI)-deltaLat*cos(deg/180*M_PI);
+  _bodyLon = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg/180*M_PI); // [x'] =  [ cos(th)   -sin(th)] [x]
+  _bodyLat = deltaLon*sin(deg/180*M_PI)+deltaLat*cos(deg/180*M_PI); // [y']    [sin(th)    cos(th) ] [y]
 
   // 機体座標系でのゴールまでの角度を計算
   if(_bodyLat>0){

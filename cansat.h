@@ -21,7 +21,6 @@ public:
   // Initialization (Constructor and Destructor)
   Cansat();
   ~Cansat();
-  void setSerial(HardwareSerial* serialgps, HardwareSerial* serialopenlog, HardwareSerial* serialradio);
   void setGoal(float destLat, float destLon);
 
   // Objects

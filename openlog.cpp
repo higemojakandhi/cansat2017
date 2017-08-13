@@ -15,8 +15,13 @@ OpenLog::~OpenLog(){
   _serial=NULL;
 }
 
-void OpenLog::init(HardwareSerial* serial){
+void OpenLog::setHeader(String* header){
+  _header = header;
+}
+void OpenLog::setSerial(HardwareSerial* serial){
   _serial = serial;
+}
+void OpenLog::init(){
   reset();
 
   // Creating New File
@@ -29,8 +34,7 @@ void OpenLog::init(HardwareSerial* serial){
   gotoCommandMode();
   createFile(_logFile);
   Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");
-  _serial->print("Time[ms], Time, State, Light, numSat, PosAccuracy, alt, Lat, Lon, ");
-  _serial->println("accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg");
+  _serial->print(*_header);
   
   sprintf(_errorFile, "err%03d.txt", numLog);
   gotoCommandMode();
@@ -93,7 +97,7 @@ void OpenLog::waitUntilReady2Log(){
       if(_serial->read() == '<')  break;
       // Serial.println("not ready to Log");
     }else{
-      if(i==200) reset(); Serial.println("OpenLog Reset");
+      if(i==200) reset(); Serial.println(F("OpenLog Reset"));
       // Serial.println("not available");
     }
     i++;

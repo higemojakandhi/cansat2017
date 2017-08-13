@@ -36,5 +36,5 @@ void Radio::send(String s){
   XBeeAddress64 addr64 = XBeeAddress64(0x00000000, 0x00000000);
   ZBTxRequest zbTx = ZBTxRequest(addr64, sendData, sizeof(sendData));
   xbee.send(zbTx);
-  Serial.println("Sent to XBee!");
+  Serial.println(F("Sent to XBee!"));
 }
