@@ -16,10 +16,12 @@ public:
   ~Gps();
   void setSerial(HardwareSerial* serial);
   void readGpsValue();
+  void convert2meters();
 
   HardwareSerial* _serial;
   TinyGPSPlus tinygps;
   unsigned long _time;
+  // _lat, _lonの単位は[m] (地球を平面とした時)
   float _lat, _lon;
   short _year, _month, _day;
   short _hour, _minute, _second, _centisecond;

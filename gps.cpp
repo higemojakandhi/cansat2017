@@ -37,8 +37,8 @@ void Gps::readGpsValue(){
   while(_serial->available()>0){
     tinygps.encode(_serial->read());
     if(tinygps.location.isValid()){
-      _lat = tinygps.location.lat();
       _lon = tinygps.location.lng();
+      _lat = tinygps.location.lat();
     }
     if(tinygps.time.isValid()){
       _hour = tinygps.time.hour();
@@ -57,6 +57,13 @@ void Gps::readGpsValue(){
     _posAccuracy = tinygps.hdop.value();
   }
 
+  convert2meters();
+
   if (millis() > 5000 && tinygps.charsProcessed() < 10)
     Serial.println(F("No GPS data received: check wiring"));
+}
+
+void Gps::convert2meters(){
+  _lon = _lon * 100000;
+  _lat = _lat * 100000;
 }

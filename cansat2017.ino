@@ -34,7 +34,10 @@ void setup() {
   // OpenLogに保存するヘッダー渡す
   cansat.openlog.setHeader(&dataHeader);
   // ゴール設定
-  cansat.setGoal(35.742628, 140.011140);
+  // cansat.setGoal(35.550488, 139.655641); // 北
+  // cansat.setGoal(35.546009, 139.653412); // 西 seven
+  cansat.setGoal(35.553139, 139.656640); // 梅里カントリークラブ
+  // cansat.setGoal(35.550096, 139.660325); // 古墳
 
   // openlog, 9軸初期化
   cansat.openlog.init();
@@ -119,8 +122,8 @@ void loop() {
                  + String(cansat.gps._satNum) + ", "
                  + String(cansat.gps._posAccuracy) + ", "
                  + String(cansat.gps._alt) + ", "
-                 + String(cansat.gps._lat*1000000) + ", "
-                 + String(cansat.gps._lon*1000000) + ", "
+                 + String(cansat.gps._lat*10) + ", "
+                 + String(cansat.gps._lon*10) + ", "
                  + String(cansat.nineaxis.ax) + ", "
                  + String(cansat.nineaxis.ay) + ", "
                  + String(cansat.nineaxis.az) + ", "

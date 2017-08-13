@@ -25,10 +25,14 @@ Cansat::Cansat(){
 
 Cansat::~Cansat(){
 }
-
+/**
+* @func setGoal(float destlat, float destLon)
+* @brief 目的地を設定する
+* @detail
+*/
 void Cansat::setGoal(float destLat, float destLon){
-  _destLat = destLat;
-  _destLon = destLat;
+  _destLat = destLat*100000; // 単位は[m] (地球を平面とすると)
+  _destLon = destLat*100000;
 }
 
 void Cansat::preparing(){
@@ -45,7 +49,7 @@ void Cansat::preparing(){
   // Flyingのジャッジ
   if(light._lightValue < PRE2FLY_THRE) {
     _countPreLightLoop++;
-    if (_countPreLightLoop > COUNT_PRE2FLY_LOOP_THRE) _state=PREPARING; //_state=RUNNING; //_state=FLYING;
+    if (_countPreLightLoop > COUNT_PRE2FLY_LOOP_THRE) _state=RUNNING; //_state=FLYING;
   }else{
     _countPreLightLoop=0;
   }
