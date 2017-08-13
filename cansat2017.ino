@@ -19,7 +19,7 @@ Cansat cansat;
 String dataHeader = "Time[ms], Time, State, Light, numSat, PosAccuracy, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg";
 
 
-// ------------------------------------------------------------- SETUP ----------------------------------------------------------------------// 
+// ------------------------------------------------------------- SETUP ----------------------------------------------------------------------//
 void setup() {
   // Serial通信開始
   Serial.begin(9600); Serial.println(F("Begin!"));
@@ -28,9 +28,9 @@ void setup() {
   SerialOpenLog.begin(9600);    // より早い読み取りをするには2400, 4800, 9600, 19200, 38400, 57600, and 115200
   // Serial 渡す
   cansat.gps.setSerial(&SerialGps);
-  cansat.radio.setSerial(SerialRadioadio);
-  cansat.openlog.setSerial(SerialOpenLog);
-  
+  cansat.radio.setSerial(&SerialRadio);
+  cansat.openlog.setSerial(&SerialOpenLog);
+
   // OpenLogに保存するヘッダー渡す
   cansat.openlog.setHeader(&dataHeader);
   // ゴール設定
@@ -49,17 +49,17 @@ void setup() {
   analogWrite(PIN_LED_BLUE, 0);
   analogWrite(PIN_LED_GREEN, 0);
   analogWrite(PIN_LED_RED, 0);
-  
+
   // それぞれ初期化
   Serial.println(F("All Set!"));
 }
 
 
-// ------------------------------------------------------------- LOOP ----------------------------------------------------------------------// 
+// ------------------------------------------------------------- LOOP ----------------------------------------------------------------------//
 void loop() {
   cansat.openlog.openErrorFile();
   // それぞれのセンサーにOpenLogを渡し，errorメッセージを記録
-  
+
   // 位置が取れない場合どうする？ -> 位置推定出来るほど正確なセンサーとモータではないので諦める．
   cansat.gps.readGpsValue();
   // 9軸が取れない場合はどうする？ flag渡して9軸が不可ならgpsのlat/lon/speed/degから計算
@@ -118,7 +118,7 @@ void loop() {
                  + String(cansat.light._lightValue) + ", "
                  + String(cansat.gps._satNum) + ", "
                  + String(cansat.gps._posAccuracy) + ", "
-                 + String(cansat.gps._alt) + ", ";
+                 + String(cansat.gps._alt) + ", "
                  + String(cansat.gps._lat*1000000) + ", "
                  + String(cansat.gps._lon*1000000) + ", "
                  + String(cansat.nineaxis.ax) + ", "

@@ -22,7 +22,7 @@ void NineAxis::init(){
   Serial.println(F("MPU9250"));
   Serial.println(F("9-DOF 16-bit"));
   Serial.println(F("motion sensor"));
-  Serial.println(F8"60 ug LSB"));
+  Serial.println(F("60 ug LSB"));
   delay(800);
 
   // Read the WHO_AM_I register, this is a good test of communication

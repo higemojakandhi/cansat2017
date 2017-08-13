@@ -37,6 +37,7 @@ void Cansat::preparing(){
   analogWrite(PIN_LED_BLUE, 0);
   analogWrite(PIN_LED_GREEN, 0);
   analogWrite(PIN_LED_RED, 0);
+
   // モータは停止
   rightMotor.stop();
   leftMotor.stop();
@@ -63,7 +64,7 @@ void Cansat::flying(){ //1
     analogWrite(PIN_LED_RED, 0); delay(500);
   }
 
-  // 動作
+  // モータは停止
   rightMotor.stop();
   leftMotor.stop();
 
@@ -85,7 +86,7 @@ void Cansat::dropping(){ //2
   analogWrite(PIN_LED_RED, 0);
 
   // z軸加速度とx,yジャイロがある閾値以下の場合は着地
-  if(fabs(nineaxis.az) <ACCELZ_THRE && fabs(nineaxis.gx) <GYROX_THRE && fabs(nineaxis.gy) <GYROY_THRE){
+  if(fabs(nineaxis.az)<ACCELZ_THRE && fabs(nineaxis.gx)<GYROX_THRE && fabs(nineaxis.gy)<GYROY_THRE){
     _countDrop2LandLoop++;
     if(_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE) _state=LANDING;
   }else{
@@ -120,9 +121,9 @@ void Cansat::landing(){ //3
 void Cansat::running(){ //4
   // このループ入った時の時間を保存
   if(_startRunningTime==0) _startRunningTime = millis();
-  // GPSが入ってこなかったらとりあえずうごかない // 一応1以下にした
-  // if(gps._lat==1 && gps._lon==1){
-  if(_state!=RUNNING){
+  // GPSが入ってこなかったらとりあえずうごかない // 0なはずだけど，一応1以下にした
+  if(gps._lat<=1 && gps._lon<=1){
+  // if(_state!=RUNNING){
     leftMotor.stop();
     rightMotor.stop();
     analogWrite(PIN_LED_BLUE, 255); delay(500);
@@ -144,8 +145,8 @@ void Cansat::running(){ //4
       _flagXBeeReleasingTime=1;
     }else{
       // 通常運転
-      // whichWay2Go(gps._lat, gps._lon, nineaxis.deg);
-      whichDirection(nineaxis.deg);
+      whichWay2Go(gps._lat, gps._lon, nineaxis.deg);
+      // whichDirection(nineaxis.deg);
       // タイヤ動かす．
       if(_direct==0){
         rightMotor.setSpeedAt(255);
@@ -179,8 +180,8 @@ void Cansat::whichWay2Go(float lat, float lon, float deg){
   float deltaLat = (_destLat-lat)*100000; // メートルに変換
   _distance = sqrt(pow(deltaLat,2)+pow(deltaLon,2));
   // 機体座標に変換
-  _bodyLon = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg/180*M_PI); // [x'] =  [ cos(th)   -sin(th)] [x]
-  _bodyLat = deltaLon*sin(deg/180*M_PI)+deltaLat*cos(deg/180*M_PI); // [y']    [sin(th)    cos(th) ] [y]
+  _bodyLon = deltaLon*cos(deg/180*M_PI)-deltaLat*sin(deg/180*M_PI); // [x'] =  [cos(th)     -sin(th)] [x]
+  _bodyLat = deltaLon*sin(deg/180*M_PI)+deltaLat*cos(deg/180*M_PI); // [y']    [sin(th)     cos(th) ] [y]
 
   // 機体座標系でのゴールまでの角度を計算
   if(_bodyLat>0){

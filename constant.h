@@ -54,9 +54,9 @@
 
 #define ANGLE_THRE 20   // 目的地が角度以下なら真っ直ぐ進む
 
-#define ACCELZ_THRE 1   z方向の加速度の閾値
-#define GYROX_THRE 10   x方向のジャイロの閾値
-#define GYROY_THRE 10   y方向のジャイロの閾値
+#define ACCELZ_THRE 1   // z方向の加速度の閾値
+#define GYROX_THRE 10   // x方向のジャイロの閾値
+#define GYROY_THRE 10   // y方向のジャイロの閾値
 #define LANDING_TIME_THRE 180000
 
 #endif
