@@ -22,6 +22,7 @@ public:
   Cansat();
   ~Cansat();
   void setGoal(float destLat, float destLon);
+  void setSerial(HardwareSerial* serial);
 
   // Objects
   Motor leftMotor = Motor(PIN_LEFT_MOTOR_FIN, PIN_LEFT_MOTOR_RIN);
@@ -40,15 +41,12 @@ public:
   void dropping();
   void landing();
   void running();
-  void idling();
   void stucking();
   void goal();
-  void judgeIdling2Running();
   void judgeStucking2Running();
   void whichWay2Go(float lat, float lon, float deg);
   void whichDirection(float deg);
 
-  void judgeIdling();
   void judgeStucking();
   void judgeGoal();
 
@@ -57,27 +55,31 @@ public:
 
   // Variables to save
   int _state;
-  unsigned long _startPreparingTime;
-  unsigned long _startFlyingTime;
-  unsigned long _startDroppingTime;
-  unsigned long _startLandingTime;
-  unsigned long _startRunningTime;
+  unsigned long _startPreparingTime=0;
+  unsigned long _startFlyingTime=0;
+  unsigned long _startDroppingTime=0;
+  unsigned long _startLandingTime=0;
+  unsigned long _startRunningTime=0;
 
-  unsigned long _preGpsPollingTime;
-  float _pre20sGpsLat;
-  float _pre20sGpsLon;
+  unsigned long _preGpsPollingTime=0;
+  float _pre20sGpsLat=0;
+  float _pre20sGpsLon=0;
 
   float _destLat;
   float _destLon;
   float _distance;
 
-  int _flagLandingTime;
-  int _flagXBeeReleasingTime;
+  int _flagLandingTime=0;
+  int _flagXBeeReleasingTime=0;
 
-  int _countPreLightLoop;
-  int _countFlyLightLoop;
-  int _countDrop2LandLoop;
+  int _countPreLightLoop=0;
+  int _countFlyLightLoop=0;
+  int _countDrop2LandLoop=0;
+  int _countDrop2LandGPSLoop=0;
+  int preAltSavedTime=0;
+  float preAlt=0;
 
+  HardwareSerial* _serial;
   int _direct;
   int _bodyAngle;
   float _bodyLat;

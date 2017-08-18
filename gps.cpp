@@ -24,18 +24,23 @@ Gps::~Gps(){
 void Gps::setSerial(HardwareSerial* serial){
   _serial = serial;
   while(_serial->available()>0){
-    tinygps.encode(_serial->read());
+    char c = _serial->read();
+    Serial.print(c);
+    tinygps.encode(c);
     if(tinygps.date.isValid()){
       _year = tinygps.date.year();
       _month = tinygps.date.month();
       _day = tinygps.date.day();
     }
   }
+  Serial.println("");
 }
 
 void Gps::readGpsValue(){
   while(_serial->available()>0){
-    tinygps.encode(_serial->read());
+    char c = _serial->read();
+    Serial.print(c);
+    tinygps.encode(c);
     if(tinygps.location.isValid()){
       _lon = tinygps.location.lng();
       _lat = tinygps.location.lat();
@@ -56,14 +61,9 @@ void Gps::readGpsValue(){
     _satNum = tinygps.satellites.value();
     _posAccuracy = tinygps.hdop.value();
   }
-
-  convert2meters();
+  Serial.println(" ");
 
   if (millis() > 5000 && tinygps.charsProcessed() < 10)
     Serial.println(F("No GPS data received: check wiring"));
 }
 
-void Gps::convert2meters(){
-  _lon = _lon * 100000;
-  _lat = _lat * 100000;
-}

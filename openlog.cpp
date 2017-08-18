@@ -27,15 +27,15 @@ void OpenLog::init(){
   // Creating New File
   int numLog=1;
   sprintf(_logFile, "log%03d.txt", numLog);
-  while(!isExist(_logFile)){
+  while(isExist(_logFile)){
     numLog++;
     sprintf(_logFile, "log%03d.txt", numLog);
   }
   gotoCommandMode();
   createFile(_logFile);
   Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");
-  _serial->print(*_header);
-  
+  _serial->println(*_header);
+
   sprintf(_errorFile, "err%03d.txt", numLog);
   gotoCommandMode();
   createFile(_errorFile);
@@ -95,25 +95,23 @@ void OpenLog::waitUntilReady2Log(){
   while(1){
     if(_serial->available()){
       if(_serial->read() == '<')  break;
-      // Serial.println("not ready to Log");
+      _connected=true;
     }else{
       if(i==200) reset(); Serial.println(F("OpenLog Reset"));
-      // Serial.println("not available");
     }
     i++;
   }
 }
 
 void OpenLog::waitUntilReady2ReceiveCommand(){
-  int i=0;
   //Wait for OpenLog to respond with '>' to indicate we are in command mode
+  int i=0;
   while(1) {
     if(_serial->available()){
       if(_serial->read() == '>') break;
-      //  Serial.println("not ready to Receive Command");
+      _connected=true;
     }else{
-      if(i==200) reset(); Serial.println("OpenLog Reset");
-      // Serial.println("not available");
+      if(i==200) reset(); Serial.println(F("OpenLog Reset"));
     }
     i++;
   }
@@ -123,11 +121,9 @@ void OpenLog::waitUntilReady2ReceiveCommand(){
 void OpenLog::gotoCommandMode() {
   //Send three control z to enter OpenLog command mode
   //Works with Arduino v1.0
-  // Serial.println("before Command");
   _serial->write(26);
   _serial->write(26);
   _serial->write(26);
-  // Serial.println("after Command");
   waitUntilReady2ReceiveCommand();
 }
 
@@ -136,10 +132,11 @@ bool OpenLog::isExist(char *fileName){
   _serial->print(fileName);
   _serial->write(13);
 
+  // コマンドを打つとコマンド(size filename)がそのまま帰ってくるので
+  // 改行するところ(\r)までの文字列は無視．
   while(1){
     if(_serial->available()){
       char c = _serial->read();
-      Serial.println(c);
       if(c == '\r') break;
     }
   }
@@ -148,10 +145,10 @@ bool OpenLog::isExist(char *fileName){
     int flag=0;
     while(_serial->available()){
       char c = _serial->read();
-      if(c == '-') return true;// このファイル名は使われていませんということ！
-      if(c == '>')  flag=1; break;
+      // ファイルが使われていない場合は-1が返ってくるので - で判定
+      if(c == '-') return false;
+      // それ以外は使われているということ
+      if(c == '>')  return true;
     }
-    if(flag==1) break;
   }
-  return false;
 }

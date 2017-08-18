@@ -128,10 +128,12 @@ void NineAxis::readNineAxisValue(){
     mz = (float)magCount[2]*mRes*magCalibration[2] - magBias[2];
 
     // Declination of 7.39 Degrees from True "North Pole" @矢上
-    deg = atan2(my,mx)*180/PI + 7.39;
+    deg = atan2(my,mx)*180/PI - 7.39;
     if(deg>180){
       deg -= 360;
     }
+    // 1次フィルタ
+    deg_filt = alpha*deg_filt + (1-alpha)*deg;
   }
 
   Now = micros();
@@ -148,7 +150,7 @@ void NineAxis::readNineAxisValue(){
   // in the LSM9DS0 sensor. This rotation can be modified to allow any convenient orientation convention.
   // This is ok by aircraft orientation standards!
   // Pass gyro rate as rad/s
-  MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f,  my,  mx, mz);
+  // MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f,  my,  mx, mz);
   //  MahonyQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f, my, mx, mz);
 
   if (!AHRS) {
@@ -175,7 +177,7 @@ void NineAxis::readNineAxisValue(){
       Date	Declination
       2016-04-09	1.34° W  changing by  0.06° E per year (+ve for west )
       */
-      yaw += 7.39; // 矢上キャンパス
+     yaw += 7.39; // 矢上キャンパス
 
       tempCount = readTempData();  // Read the adc values
       temperature = ((float) tempCount) / 333.87 + 21.0; // Temperature in degrees Centigrade

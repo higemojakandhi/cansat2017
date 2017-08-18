@@ -208,7 +208,7 @@ public:
   void readBytes(uint8_t address, uint8_t subAddress, uint8_t count, uint8_t * dest);
   uint8_t readByte(uint8_t address, uint8_t subAddress);
   void readNineAxisValue();
-  
+
   // Specify sensor full scale
   uint8_t Gscale = GFS_250DPS;
   uint8_t Ascale = AFS_16G;
@@ -238,6 +238,9 @@ public:
   float deltat = 0.0f, sum = 0.0f;        // integration interval for both filter schemes
   uint32_t lastUpdate = 0, firstUpdate = 0; // used to calculate integration interval
   uint32_t Now = 0;        // used to calculate integration interval
+
+  float deg_filt;
+  #define alpha 0.7
 
   float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values
   float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion

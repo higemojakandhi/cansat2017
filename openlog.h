@@ -32,6 +32,7 @@ public:
   HardwareSerial* _serial;
   String* _header;
   int _pinOpenLogReset;
+  bool _connected;
 
   char _logFile[12];
   char _errorFile[12];

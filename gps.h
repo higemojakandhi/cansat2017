@@ -20,7 +20,7 @@ public:
 
   HardwareSerial* _serial;
   TinyGPSPlus tinygps;
-  unsigned long _time;
+//  unsigned long _time;
   // _lat, _lonの単位は[m] (地球を平面とした時)
   float _lat, _lon;
   short _year, _month, _day;
