@@ -76,8 +76,8 @@ public:
   int _countFlyLightLoop=0;
   int _countDrop2LandLoop=0;
   int _countDrop2LandGPSLoop=0;
-  int preAltSavedTime=0;
-  float preAlt=0;
+  int _preAltSavedTime=0;
+  float _preAlt=0;
 
   HardwareSerial* _serial;
   int _direct;

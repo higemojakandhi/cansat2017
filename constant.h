@@ -55,9 +55,9 @@
 #define ANGLE_THRE 20   // 目的地が角度以下なら真っ直ぐ進む
 
 #define ACCEL_THRE  1.2   // 加速度の閾値
-#define GYRO_THRE   5   // ジャイロの閾値
+#define GYRO_THRE   10   // ジャイロの閾値
 #define ALT_THRE    5    // 10秒間でGPSの高度が5m変化しないかどうかの閾値
-#define BETWEEN_NOW_AND_PRE_ALT_TIME 10000 // 前回GPSの高度を保存した時刻と今の時刻との差の閾値
+#define BETWEEN_NOW_AND_PRE_ALT_TIME 240000 // 前回GPSの高度を保存した時刻と今の時刻との差の閾値
 
 #define GOAL_TIME_THRE 180000
 #endif

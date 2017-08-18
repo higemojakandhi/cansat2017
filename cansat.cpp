@@ -84,37 +84,34 @@ void Cansat::dropping(){ //2
     analogWrite(PIN_LED_GREEN, 255);
     analogWrite(PIN_LED_RED, 0);
   }
-//
-//  // 加速度とジャイロから着地検知
-//  if(fabs(nineaxis.ax)<ACCEL_THRE && fabs(nineaxis.ay)<ACCEL_THRE && fabs(nineaxis.az)<ACCEL_THRE){
-//    if(fabs(nineaxis.gx)<GYRO_THRE && fabs(nineaxis.gy)<GYRO_THRE && fabs(nineaxis.gz)<GYRO_THRE){
-//      _countDrop2LandLoop++;
-//      if(_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE) Serial.println("AccelGyro"); _state=LANDING; 
-//    }else{
-//      _countDrop2LandLoop=0;
-//    }
-//  }
-//
-//  // 高度で着地検知
-//  if(preAlt==0){
-//    preAlt=gps._alt;
-//    preAltSavedTime=millis();
-//  }else{
-//    if(millis()-preAltSavedTime > BETWEEN_NOW_AND_PRE_ALT_TIME){
-//      if(preAlt-gps._alt < ALT_THRE){
-//        _countDrop2LandGPSLoop++;
-//        if(_countDrop2LandGPSLoop > COUNT_DROP2LAND_GPS_LOOP_THRE) Serial.println("Alt"); _state=LANDING;
-//      }else{
-//        _countDrop2LandGPSLoop=0;
-//      }
-//        preAltSavedTime=millis();
-//    }
-//  }30gfbq7b1a27737
+
+ // 加速度とジャイロから着地検知
+ if((pow(nineaxis.ax,2)+pow(nineaxis.ay,2)+pow(nineaxis.az,2))<ACCEL_THRE^2){ //　加速度の合計が1.2?以}下
+   if(fabs(nineaxis.gx)<GYRO_THRE && fabs(nineaxis.gy)<GYRO_THRE && fabs(nineaxis.gz)<GYRO_THRE){
+     _countDrop2LandLoop++;
+     if(_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE) Serial.println("AccelGyro"); _state=LANDING;
+   }else{
+     _countDrop2LandLoop=0;
+   }
+ }
+
+ // 高度で着地検知
+ if(_preAlt==0){
+   _preAlt=gps._alt;
+   _preAltSavedTime=millis();
+ }else{
+   if(millis()-_preAltSavedTime > BETWEEN_NOW_AND_PRE_ALT_TIME){
+     if(_preAlt-gps._alt < ALT_THRE){
+       _state=LANDING;
+     }
+     _preAltSavedTime=millis();
+   }
+ }
 
   // 時間で着地検知
   if(_startDroppingTime!=0){
 //    Serial.print("millis"); Serial.println(millis());
-//    Serial.print("Drop time"); Serial.println(_startDroppingTime); 
+//    Serial.print("Drop time"); Serial.println(_startDroppingTime);
 //    Serial.print("Diff"); Serial.println(millis()-_startDroppingTime);
 //    Serial.print("LANDING_TIME_THRE"); Serial.println(LANDING_TIME_THRE);
     if(millis()-_startDroppingTime > LANDING_TIME_THRE*2){
@@ -132,7 +129,7 @@ void Cansat::landing(){ //3
     analogWrite(PIN_LED_GREEN, 0);
     analogWrite(PIN_LED_RED, 255);
   }
-  
+
   // Landing検知したらReleasePin焼き切る
   digitalWrite(PIN_RELEASING_XBEE2, HIGH);
   // ある一定時間過ぎたらRunningにする
@@ -153,7 +150,7 @@ void Cansat::running(){ //4
     analogWrite(PIN_LED_GREEN, 0);
     analogWrite(PIN_LED_RED, 0);
   }
-  
+
   // GPSが入ってこなかったらとりあえずうごかない // 0なはずだけど，一応1以下にした
   if(gps._lat<=1 && gps._lon<=1){
   // if(_state!=RUNNING){
