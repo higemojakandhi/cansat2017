@@ -41,6 +41,7 @@ public:
   void dropping();
   void landing();
   void running();
+  void releasing();
   void stucking();
   void goal();
   void judgeStucking2Running();
@@ -70,7 +71,7 @@ public:
   float _distance;
 
   int _flagLandingTime=0;
-  int _flagXBeeReleasingTime=0;
+  int _flagXBeeReleasingNum=1;
 
   int _countPreLightLoop=0;
   int _countFlyLightLoop=0;

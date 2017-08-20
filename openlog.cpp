@@ -35,11 +35,11 @@ void OpenLog::init(){
   createFile(_logFile);
   Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");
   _serial->println(*_header);
-
-  sprintf(_errorFile, "err%03d.txt", numLog);
-  gotoCommandMode();
-  createFile(_errorFile);
-  Serial.println("Error File Created!"); _serial->println("Error File Created!");
+//
+//  sprintf(_errorFile, "err%03d.txt", numLog);
+//  gotoCommandMode();
+//  createFile(_errorFile);
+//  Serial.println("Error File Created!"); _serial->println("Error File Created!");
 }
 
 void OpenLog::reset(){
@@ -59,8 +59,8 @@ void OpenLog::saveErrorOnSD(String error){
 }
 
 void OpenLog::saveDataOnSD(String alldata){
-  gotoCommandMode();
-  appendFile(_logFile);
+//  gotoCommandMode();
+//  appendFile(_logFile);
   //OpenLog is now waiting for characters and will record them to the new file
   _serial->println(alldata);
 }

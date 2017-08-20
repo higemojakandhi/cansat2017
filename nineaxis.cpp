@@ -376,7 +376,7 @@ void NineAxis::magcalMPU9250(float * dest1, float * dest2)
 
   Serial.println("Mag Calibration: Wave device in a figure eight until done!");
 
-  sample_count = 256;
+  sample_count = 128;
   for(ii = 0; ii < sample_count; ii++) {
     readMagData(mag_temp);  // Read the mag data
     for (int jj = 0; jj < 3; jj++) {

@@ -151,47 +151,28 @@ void Cansat::running(){ //4
     analogWrite(PIN_LED_RED, 0);
   }
 
+  // XBEE_DROP_TIME秒経ったらXbee1おとす
+  // 2*XBEE_DROP_TIME秒経ったらXbee2おとす
+  if(millis()-_startRunningTime>XBEE_DROP_THRE && _flagXBeeReleasingNum==1) _state=RELEASING;
+  if(millis()-_startRunningTime>2*XBEE_DROP_THRE && _flagXBeeReleasingNum==2) _state=RELEASING;
+
   // GPSが入ってこなかったらとりあえずうごかない // 0なはずだけど，一応1以下にした
   if(gps._lat<=1 && gps._lon<=1){
-  // if(_state!=RUNNING){
     leftMotor.stop();
     rightMotor.stop();
   }else{
-    // 10秒経ったらXbeeおとす
-    if(millis()-_startRunningTime>XBEE_DROP_THRE && _flagXBeeReleasingTime==0){
-//    if(_state!=RUNNING){
-      leftMotor.stopSlowly();
-      rightMotor.stopSlowly();
-      digitalWrite(PIN_RELEASING_XBEE1, HIGH);
-      if(millis()-_startRunningTime > (XBEE_DROP_THRE+RELEASING_TIME_THRE)){
-        digitalWrite(PIN_RELEASING_XBEE1, LOW);
-        _flagXBeeReleasingTime=1;
-      }
-//      delay(RELEASING_TIME_THRE);
-//      digitalWrite(PIN_RELEASING_XBEE1, LOW);
-//      _flagXBeeReleasingTime=1;
-//    }else if(millis()-_startRunningTime>XBEE_DROP_THRE*2 && _flagXBeeReleasingTime==1){
-//      leftMotor.stopSlowly();
-//      rightMotor.stopSlowly();
-//      digitalWrite(PIN_RELEASING_XBEE2, HIGH);
-//      if(millis()-_startRunningTime > (XBEE_DROP_THRE*2+RELEASING_TIME_THRE)){
-//        digitalWrite(PIN_RELEASING_XBEE2, LOW);
-//        _flagXBeeReleasingTime=2;
-//      }
-    }else{
-      // 通常運転
-      whichWay2Go(gps._lat, gps._lon, nineaxis.deg);
-      // タイヤ動かす．
-      if(_direct==0){
-        rightMotor.setSpeedAt(255);
-        leftMotor.setSpeedAt(255);
-      }else if(_direct==1){ //右
-        rightMotor.setSpeedAt(170*(1-_bodyAngle/180));
-        leftMotor.setSpeedAt(255);
-      }else if(_direct==-1){ //左
-        rightMotor.setSpeedAt(255);
-        leftMotor.setSpeedAt(170*(1-_bodyAngle/180));
-      }
+    // 通常運転
+    whichWay2Go(gps._lat, gps._lon, nineaxis.deg);
+    // タイヤ動かす．
+    if(_direct==0){
+      rightMotor.setSpeedAt(255);
+      leftMotor.setSpeedAt(255);
+    }else if(_direct==1){ //右
+      rightMotor.setSpeedAt(170*(1-_bodyAngle/180));
+      leftMotor.setSpeedAt(255);
+    }else if(_direct==-1){ //左
+      rightMotor.setSpeedAt(255);
+      leftMotor.setSpeedAt(170*(1-_bodyAngle/180));
     }
   }
    judgeGoal() ;
@@ -237,6 +218,27 @@ void Cansat::whichWay2Go(float lat, float lon, float deg){
   }
 }
 
+void Cansat::releasing(){
+  leftMotor.stopSlowly();
+  rightMotor.stopSlowly();
+
+  if(_flagXBeeReleasingNum==1){
+    digitalWrite(PIN_RELEASING_XBEE1, HIGH);
+    if(millis()-_startRunningTime > (XBEE_DROP_THRE+RELEASING_TIME_THRE)){
+      digitalWrite(PIN_RELEASING_XBEE1, LOW);
+      _flagXBeeReleasingNum=2;
+      _state=RUNNING;
+    }
+  }else if(_flagXBeeReleasingNum==2){
+    digitalWrite(PIN_RELEASING_XBEE2, HIGH);
+    if(millis()-_startRunningTime > (2*XBEE_DROP_THRE+RELEASING_TIME_THRE)){
+      digitalWrite(PIN_RELEASING_XBEE2, LOW);
+      _flagXBeeReleasingNum=0;
+      _state=RUNNING;
+    }
+  }
+}
+
 void Cansat::judgeStucking(){
   /* スタック検知用に5s前のGPS座標を保存し，現時刻と比較 */
   if(millis()-_preGpsPollingTime > STUCKING_JUGDE_TIME_THRE ){
@@ -244,7 +246,7 @@ void Cansat::judgeStucking(){
     _pre20sGpsLon = gps._lon;
     _preGpsPollingTime = millis();
   }
-  /* RUNNING から STUCK に陥る時の判断 */ 
+  /* RUNNING から STUCK に陥る時の判断 */
   if(fabs(_pre20sGpsLat-gps._lat)*100000==0 && fabs(_pre20sGpsLon-gps._lon)*100000==0) _state=STUCKING;
 }
 
@@ -286,7 +288,7 @@ void Cansat::goal(){
     analogWrite(PIN_LED_BLUE, 255); delay(100);
     analogWrite(PIN_LED_GREEN, 255); delay(100);
     analogWrite(PIN_LED_RED, 255); delay(100);
-    
+
     analogWrite(PIN_LED_BLUE, 0); delay(100);
     analogWrite(PIN_LED_GREEN, 0); delay(100);
     analogWrite(PIN_LED_RED, 0); delay(100);
