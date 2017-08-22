@@ -24,7 +24,7 @@ void setup() {
 //  cansat.setGoal(40.232983, 140.013769); // 左
 //  cansat.setGoal(40.232688, 140.01398); // 右
   cansat.setGoal(40.142288, 139.987260); // 能代ゴール
-
+  
   // Serial通信開始
   Serial.begin(9600); Serial.println(F("Begin!"));
   SerialGps.begin(9600);

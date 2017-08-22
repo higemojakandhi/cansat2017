@@ -17,7 +17,8 @@ void Radio::setSerial(HardwareSerial *serial){
   _serial = serial;
   xbee.setSerial(*_serial);
 }
-aaaaaaaaaaaaaaaaaaaaaaaa
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 void Radio::send(String s){
   int len = s.length();
