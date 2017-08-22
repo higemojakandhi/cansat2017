@@ -17,7 +17,6 @@ void Radio::setSerial(HardwareSerial *serial) {
   _serial = serial;
   xbee.setSerial(*_serial);
 }
-aaaaaaaaaaaaaaaaaaaaaaaa
 
 void Radio::getData() {
   XBeeResponse response = XBeeResponse();
