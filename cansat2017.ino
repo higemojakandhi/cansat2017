@@ -19,7 +19,6 @@ Cansat cansat;
 String dataHeader = "Time[ms], Time, State, Light, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg";
 String xbee_data;
 String openlog_data;
-char gps_time[6];
 
 // ------------------------------------------------------------- SETUP ----------------------------------------------------------------------//
 void setup() {
@@ -132,9 +131,7 @@ void loop() {
   
   // 送信用のデータ作成
   // State, millis, lat, lon, alt, light, ax, ay, az
-  sprintf(gps_time, "%02d%02d%02d", cansat.gps._hour, cansat.gps._minute, cansat.gps._second);
-  openlog_data = String(gps_time) + ", "
-                 + String(millis()) + ", "
+  openlog_data = String(millis()) + ", "
                  + String(cansat._state) + ", "
                  + String(cansat.light._lightValue) + ", "
                  + String(cansat.gps._alt) + ", "
