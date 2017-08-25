@@ -80,7 +80,7 @@ public:
   int _preAltSavedTime=0;
   float _preAlt=0;
 
-  HardwareSerial* _serial;
+  HardwareSerial* _serialOpenLog;
   int _direct;
   int _bodyAngle;
   float _bodyLat;

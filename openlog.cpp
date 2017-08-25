@@ -35,11 +35,13 @@ void OpenLog::init(){
   createFile(_logFile);
   Serial.println("OpenLog Begin!"); _serial->println("OpenLog Begin!");
   _serial->println(*_header);
-//
-//  sprintf(_errorFile, "err%03d.txt", numLog);
-//  gotoCommandMode();
-//  createFile(_errorFile);
-//  Serial.println("Error File Created!"); _serial->println("Error File Created!");
+
+  if(DEBUG_OPENLOG){
+    sprintf(_errorFile, "err%03d.txt", numLog);
+    gotoCommandMode();
+    createFile(_errorFile);
+    Serial.println("Error File Created!"); _serial->println("Error File Created!");
+  }
 }
 
 void OpenLog::reset(){
@@ -50,19 +52,24 @@ void OpenLog::reset(){
 }
 
 void OpenLog::openErrorFile(){
-  gotoCommandMode();
-  appendFile(_errorFile);
+  if(DEBUG_OPENLOG){
+    gotoCommandMode();
+    appendFile(_errorFile);
+  }
 }
 
 void OpenLog::saveErrorOnSD(String error){
-  _serial->println(error);
+  if(DEBUG_OPENLOG) _serial->println(error);
 }
 
 void OpenLog::saveDataOnSD(String alldata){
-//  gotoCommandMode();
-//  appendFile(_logFile);
-  //OpenLog is now waiting for characters and will record them to the new file
+  if(DEBUG_OPENLOG){
+    gotoCommandMode();
+    appendFile(_logFile);
+    //OpenLog is now waiting for characters and will record them to the new file
+  }
   _serial->println(alldata);
+  delay(200);
 }
 
 void OpenLog::createFile(char *fileName) {
@@ -142,7 +149,6 @@ bool OpenLog::isExist(char *fileName){
   }
 
   while(1){
-    int flag=0;
     while(_serial->available()){
       char c = _serial->read();
       // ファイルが使われていない場合は-1が返ってくるので - で判定

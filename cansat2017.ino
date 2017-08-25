@@ -33,7 +33,7 @@ void setup() {
   SerialRadio.begin(9600);
   SerialOpenLog.begin(9600); // より早い読み取りをするには2400, 4800, 9600, 19200, 38400, 57600, and 115200
   // Serial 渡す
-//  cansat.setSerial(&SerialOpenLog);
+  cansat.setSerial(&SerialOpenLog);
   cansat.gps.setSerial(&SerialGps);
   cansat.radio.setSerial(&SerialRadio);
   cansat.openlog.setSerial(&SerialOpenLog);
@@ -60,13 +60,15 @@ void setup() {
 
 // ------------------------------------------------------------- LOOP ----------------------------------------------------------------------//
 void loop() {
-//  cansat.openlog.openErrorFile();
+  cansat.openlog.openErrorFile();
   // それぞれのセンサーにOpenLogを渡し，errorメッセージを記録
 
   // 位置が取れない場合どうする？ -> 位置推定出来るほど正確なセンサーとモータではないので諦める．
+  cansat.openlog.saveErrorOnSD("Reading GPS Value ...");
   cansat.gps.readGpsValue();
 
   // 9軸が取れない場合はどうする？ flag渡して9軸が不可ならgpsのlat/lon/speed/degから計算
+  cansat.openlog.saveErrorOnSD("Reading 9 Axis Value ...");
   cansat.nineaxis.readNineAxisValue();
 
   // 手動でcansatの状態を切り替える．
@@ -78,6 +80,7 @@ void loop() {
   }
 
   // cansatの状態(State)に応じて処理を変更
+  cansat.openlog.saveErrorOnSD("State: "); cansat.openlog.saveErrorOnSD(String(cansat._state));
   Serial.print(F("State: ")); Serial.println(cansat._state);
     switch (cansat._state) {
       case PREPARING: // 0
@@ -91,6 +94,7 @@ void loop() {
         cansat.flying();
         break;
       case DROPPING: // 2
+        Serial.println("Dropping...");
         cansat.dropping();
         break;
       case LANDING: // 3
@@ -127,8 +131,9 @@ void loop() {
              + String(cansat.nineaxis.deg_filt) + ", "
              + String(cansat._direct);
   Serial.println("Sending Data to Xbee...");
+  cansat.openlog.saveErrorOnSD("Sending Data to Xbee...");
   if(cansat._state!=FLYING) cansat.radio.send(xbee_data);
-  
+
   // 送信用のデータ作成
   // State, millis, lat, lon, alt, light, ax, ay, az
   openlog_data = String(millis()) + ", "

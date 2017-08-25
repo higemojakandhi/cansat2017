@@ -9,6 +9,7 @@
 #include <string.h>
 #include "Arduino.h"
 #include <HardwareSerial.h>
+#define DEBUG_OPENLOG false
 
 class OpenLog {
 public:
