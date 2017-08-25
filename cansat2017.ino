@@ -16,7 +16,7 @@ HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial
 
 // cansatオブジェクト生成
 Cansat cansat;
-String dataHeader = "Time[ms], Time, State, Light, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg";
+String dataHeader = "Time[ms], State, Light, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg";
 String xbee_data;
 String openlog_data;
 
@@ -25,7 +25,8 @@ void setup() {
   // ゴール設定
 //  cansat.setGoal(40.232983, 140.013769); // 左
 //  cansat.setGoal(40.232688, 140.01398); // 右
-  cansat.setGoal(40.142288, 139.987260); // 能代ゴール
+//  cansat.setGoal(40.142288, 139.987260); // 能代ゴール
+  cansat.setGoal(40.215844, 140.022620); // 公園
 
   // Serial通信開始
   Serial.begin(9600); Serial.println(F("Begin!"));
