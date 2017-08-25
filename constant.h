@@ -7,9 +7,9 @@
 #ifndef _CONSTANT_H_
 #define _CONSTANT_H_
 
-#define PIN_LED_BLUE A0
-#define PIN_LED_GREEN A1
-#define PIN_LED_RED A2
+#define PIN_LED_RED A0
+#define PIN_LED_BLUE A1
+#define PIN_LED_GREEN A2 
 #define PIN_LIGHT A15
 
 #define PIN_OPENLOG_RESET 3
@@ -41,11 +41,11 @@
 #define PRE2FLY_THRE 100              // キャリア格納判定用　（光センサの閾値）
 #define FLY2DROP_THRE 100             // 放出判定用　　　　　（光センサの閾値）
 #define LANDING_TIME_THRE 180000      // 着地検知の冗長系：時間でシークエンス移行
-#define RELEASING_TIME_THRE 18000     // 分離時間
+#define RELEASING_TIME_THRE 17000     // 分離時間
 
 #define COUNT_PRE2FLY_LOOP_THRE 100   // キャリア格納判定用  (閾値以下の値になる連続の回数の閾値
 #define COUNT_FLY2DROP_LOOP_THRE 100  // 放出判定用          (閾値以上の値になる連続の回数の閾値
-#define COUNT_DROP2LAND_LOOP_THRE 200 // 着地検知用          (ジャイロ・加速度の連続の回数の閾値
+#define COUNT_DROP2LAND_LOOP_THRE 100 // 着地検知用          (ジャイロ・加速度の連続の回数の閾値
 #define COUNT_DROP2LAND_GPS_LOOP_THRE 5 // 着地検知用        (10秒間でGPSの高度が5m変化していないループ回数の閾値)
 #define XBEE_DROP_THRE 15000          // Xbee分離時間
 #define STUCKING_JUGDE_TIME_THRE 5000
