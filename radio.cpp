@@ -62,7 +62,6 @@ void Radio::getData() {
             stateData = intData - 48;
           }
         }
-
       }
     }
   }
