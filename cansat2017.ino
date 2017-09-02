@@ -16,23 +16,20 @@ HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial
 
 // cansatオブジェクト生成
 Cansat cansat;
-String dataHeader = "Time[ms], State, Light, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyro, Pitch, Roll, Yaw, Deg";
+String dataHeader = "Time[ms], State, Light, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyroZ, magX, magY, magZ, Pitch, Roll, Yaw, Deg";
 String xbee_data;
 String openlog_data;
 
 // ------------------------------------------------------------- SETUP ----------------------------------------------------------------------//
 void setup() {
   // ゴール設定
-//  cansat.setGoal(40.232983, 140.013769); // 左
-//  cansat.setGoal(40.232688, 140.01398); // 右
-//  cansat.setGoal(40.142288, 139.987260); // 能代ゴール
-  cansat.setGoal(40.215844, 140.022620); // 公園
+  cansat.setGoal(35.554970, 139.656025);
 
   // Serial通信開始
   Serial.begin(9600); Serial.println(F("Begin!"));
   SerialGps.begin(9600);
   SerialRadio.begin(9600);
-  SerialOpenLog.begin(9600); // より早い読み取りをするには2400, 4800, 9600, 19200, 38400, 57600, and 115200
+  SerialOpenLog.begin(9600);
   // Serial 渡す
   cansat.setSerial(&SerialOpenLog);
   cansat.gps.setSerial(&SerialGps);
@@ -85,9 +82,7 @@ void loop() {
   Serial.print(F("State: ")); Serial.println(cansat._state);
     switch (cansat._state) {
       case PREPARING: // 0
-        Serial.println("Reading Light Value");
         cansat.light.readLightValue();
-        Serial.println("Preparing...");
         cansat.preparing();
         break;
       case FLYING: // 1
@@ -104,7 +99,7 @@ void loop() {
       case RUNNING: // 4
         cansat.running();
         break;
-      case RELEASING:
+      case RELEASING: // 5
         cansat.releasing();
         break;
       case STUCKING: // 6
@@ -149,9 +144,9 @@ void loop() {
                  + String(cansat.nineaxis.gx) + ", "
                  + String(cansat.nineaxis.gy) + ", "
                  + String(cansat.nineaxis.gz) + ", "
-//                 + String(cansat.nineaxis.mx) + ", "
-//                 + String(cansat.nineaxis.my) + ", "
-//                 + String(cansat.nineaxis.mz) + ", "
+                 + String(cansat.nineaxis.mx) + ", "
+                 + String(cansat.nineaxis.my) + ", "
+                 + String(cansat.nineaxis.mz) + ", "
                  + String(cansat.nineaxis.pitch) + ", "
                  + String(cansat.nineaxis.roll) + ", "
                  + String(cansat.nineaxis.yaw) + ", "
