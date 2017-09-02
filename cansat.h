@@ -44,31 +44,34 @@ public:
   void releasing();
   void stucking();
   void goal();
-  void judgeStucking2Running();
-  void whichWay2Go(float lat, float lon, float deg);
-  void whichDirection(float deg);
+  void guidance(float lat, float lon, float deg, float goalLat, float goalLon);
 
   void judgeStucking();
-  void judgeGoal();
 
   // State Switcher
   void switchStateTo(byte state);
 
   // Variables to save
-  int _state;
+  int _state=0;
+  int _running_state=1;
   unsigned long _startPreparingTime=0;
   unsigned long _startFlyingTime=0;
   unsigned long _startDroppingTime=0;
   unsigned long _startLandingTime=0;
   unsigned long _startRunningTime=0;
+  unsigned long _startReleasingTime=0;
 
-  unsigned long _preGpsPollingTime=0;
-  float _pre20sGpsLat=0;
-  float _pre20sGpsLon=0;
+  unsigned long _lastGpsTime=0;
+  float _lastGpsLat=0;
+  float _lastGpsLon=0;
 
-  float _destLat;
-  float _destLon;
-  float _distance;
+  float _destLat=0;
+  float _destLon=0;
+  float _distance=0;
+  float sub_goal1_lat=0;
+  float sub_goal1_lon=0;
+  float sub_goal2_lat=0;
+  float sub_goal2_lon=0;
 
   int _flagLandingTime=0;
   int _flagXBeeReleasingNum=1;
@@ -81,10 +84,10 @@ public:
   float _preAlt=0;
 
   HardwareSerial* _serialOpenLog;
-  int _direct;
-  int _bodyAngle;
-  float _bodyLat;
-  float _bodyLon;
+  int _direct=0;
+  int _bodyAngle=0;
+  float _bodyLat=0;
+  float _bodyLon=0;
 };
 
 #endif

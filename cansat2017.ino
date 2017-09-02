@@ -108,7 +108,7 @@ void loop() {
       case GOAL: // 7
         cansat.goal();
         break;
-      case DEBUG: //10
+      case STANDBY: //10
         cansat.rightMotor.stop();
         cansat.leftMotor.stop();
         digitalWrite(PIN_RELEASING, LOW);
