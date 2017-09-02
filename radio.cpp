@@ -18,14 +18,15 @@ void Radio::setSerial(HardwareSerial *serial) {
   xbee.setSerial(*_serial);
 }
 
-void Radio::receiveModuleData() {
+void Radio::getData() {
   XBeeResponse response = XBeeResponse();
   ZBRxResponse rx = ZBRxResponse();
   xbee.readPacket();
   if (xbee.getResponse().isAvailable()) {
     if (xbee.getResponse().getApiId() == ZB_EXPLICIT_RX_RESPONSE) {
       xbee.getResponse().getZBRxResponse(rx);
-      if (xbee.getResponse().getFrameData()[4] == 0x40) {
+      
+      if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xF6) {
         for (int i = 0; i < rx.getDataLength(); i++) {
           if (i == 10) {
             data1 = String(rx.getData()[i], DEC);
@@ -37,8 +38,9 @@ void Radio::receiveModuleData() {
         intData1 = data1.toInt();
         intData2 = data2.toInt();
         moduleData1 = intData1 * 256 + intData2;
-
-      } else if (xbee.getResponse().getFrameData()[4] == 0x41) {
+       } 
+       
+      else if (xbee.getResponse().getFrameData()[4] == 0x41 && xbee.getResponse().getFrameData()[5] == 0x54) {
         for (int i = 0; i < rx.getDataLength(); i++) {
           if (i == 10) {
             data1 = String(rx.getData()[i], DEC);
@@ -50,6 +52,16 @@ void Radio::receiveModuleData() {
         intData1 = data1.toInt();
         intData2 = data2.toInt();
         moduleData2 = intData1 * 256 + intData2;
+      }
+      
+      else if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xE7) {
+        for (int i = 0; i < rx.getDataLength(); i++) {
+          receiveString = String(rx.getData()[i], DEC);
+          intData = receiveString.toInt();
+          if (intData <= 57 && intData >= 48) {
+            stateData = intData - 48;
+          }
+        }
       }
     }
   }

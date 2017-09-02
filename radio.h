@@ -16,7 +16,7 @@ class Radio {
     Radio();
     ~Radio();
     void setSerial(HardwareSerial* serial);
-    void receiveModuleData();
+    void getData();
     void send(String s);
 
     String receiveString;
@@ -29,6 +29,7 @@ class Radio {
     int intData2;
     int moduleData1;
     int moduleData2;
+    int stateData;
 
     XBee xbee = XBee();
     HardwareSerial* _serial;
