@@ -25,7 +25,7 @@ void Radio::getData() {
   if (xbee.getResponse().isAvailable()) {
     if (xbee.getResponse().getApiId() == ZB_EXPLICIT_RX_RESPONSE) {
       xbee.getResponse().getZBRxResponse(rx);
-      
+
       if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xF6) {
         for (int i = 0; i < rx.getDataLength(); i++) {
           if (i == 10) {
@@ -62,7 +62,6 @@ void Radio::getData() {
             stateData = intData - 48;
           }
         }
-
       }
     }
   }

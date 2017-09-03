@@ -31,7 +31,7 @@ class Radio {
     int moduleData2;
     int stateData;
     int lastState;
-    
+
     XBee xbee = XBee();
     HardwareSerial* _serial;
 };
