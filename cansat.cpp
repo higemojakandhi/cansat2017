@@ -107,50 +107,50 @@ void Cansat::dropping() { //State: 2
   }
 
 
-  // 加速度とジャイロから着地検知
-  if ((pow(nineaxis.ax, 2) + pow(nineaxis.ay, 2) + pow(nineaxis.az, 2)) < ACCEL_THRE ^ 2) { //　加速度の合計が1.2?以}下
-    if (fabs(nineaxis.gx) < GYRO_THRE && fabs(nineaxis.gy) < GYRO_THRE && fabs(nineaxis.gz) < GYRO_THRE) {
-      _countDrop2LandLoop++;
-      if (_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE){
+//  // 加速度とジャイロから着地検知
+//  if ((pow(nineaxis.ax, 2) + pow(nineaxis.ay, 2) + pow(nineaxis.az, 2)) < ACCEL_THRE ^ 2) { //　加速度の合計が1.2?以}下
+//    if (fabs(nineaxis.gx) < GYRO_THRE && fabs(nineaxis.gy) < GYRO_THRE && fabs(nineaxis.gz) < GYRO_THRE) {
+//      _countDrop2LandLoop++;
+//      if (_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE){
+//        _state = LANDING;
+//
+//        Serial.println(F("JudgeLanding: Accel&Gyro"));
+//        Serial.print(F("millis: "));                              Serial.println(millis());
+//        if(DEBUG_OPENLOG){
+//          _serialOpenLog->println(F("JudgeLanding: Accel&Gyro"));
+//          _serialOpenLog->print(F("millis: "));                   _serialOpenLog->println(millis());
+//        }
+//      }
+//    } else {
+//      _countDrop2LandLoop = 0;
+//    }
+//  }
+ 
+  // 高度で着地検知
+  if (_preAlt == 0) {
+    if (!(gps._lat <= 1 && gps._lon <= 1)) {
+      _preAlt = gps._alt;                 // これ高度0だったらどうするん
+      _preAltSavedTime = millis();
+    }
+  } else {
+    if (millis() - _preAltSavedTime > BETWEEN_NOW_AND_PRE_ALT_TIME) {
+      if ((_preAlt<gps._alt) && (_preAlt - gps._alt<ALT_THRE)) {
         _state = LANDING;
-
-        Serial.println(F("JudgeLanding: Accel&Gyro"));
-        Serial.print(F("millis: "));                              Serial.println(millis());
+ 
+        Serial.println(F("JudgeLanding: GPS Altitude"));
+        Serial.print(F("PreAltSavedTime: "));                             Serial.print(_preAltSavedTime);
+        Serial.print(F("   Now: "));                                      Serial.print(millis());
+        Serial.print(F("   BETWEEN_NOW_AND_PRE_ALT_TIME: "));             Serial.println(BETWEEN_NOW_AND_PRE_ALT_TIME);
         if(DEBUG_OPENLOG){
-          _serialOpenLog->println(F("JudgeLanding: Accel&Gyro"));
-          _serialOpenLog->print(F("millis: "));                   _serialOpenLog->println(millis());
+          _serialOpenLog->println(F("JudgeLanding: GPS Altitude"));
+          _serialOpenLog->print(F("PreAltSavedTime: "));                  _serialOpenLog->print(_preAltSavedTime);
+          _serialOpenLog->print(F("   Now: "));                           _serialOpenLog->print(millis());
+          _serialOpenLog->print(F("   BETWEEN_NOW_AND_PRE_ALT_TIME: "));  _serialOpenLog->println(BETWEEN_NOW_AND_PRE_ALT_TIME);
         }
       }
-    } else {
-      _countDrop2LandLoop = 0;
+      _preAltSavedTime = millis();
     }
   }
- //
- // // 高度で着地検知
- // if (_preAlt == 0) {
- //   if (gps._lat <= 1 && gps._lon <= 1) {
- //     _preAlt = gps._alt;                 // これ高度0だったらどうするん
- //     _preAltSavedTime = millis();
- //   }
- // } else {
- //   if (millis() - _preAltSavedTime > BETWEEN_NOW_AND_PRE_ALT_TIME) {
- //     if ((_preAlt<gps._alt) && (_preAlt - gps._alt<ALT_THRE)) {
- //       _state = LANDING;
- //
- //       Serial.println(F("JudgeLanding: GPS Altitude"));
- //       Serial.print(F("PreAltSavedTime: "));                             Serial.print(_preAltSavedTime);
- //       Serial.print(F("   Now: "));                                      Serial.print(millis());
- //       Serial.print(F("   BETWEEN_NOW_AND_PRE_ALT_TIME: "));             Serial.println(BETWEEN_NOW_AND_PRE_ALT_TIME);
- //       if(DEBUG_OPENLOG){
- //         _serialOpenLog->println(F("JudgeLanding: GPS Altitude"));
- //         _serialOpenLog->print(F("PreAltSavedTime: "));                  _serialOpenLog->print(_preAltSavedTime);
- //         _serialOpenLog->print(F("   Now: "));                           _serialOpenLog->print(millis());
- //         _serialOpenLog->print(F("   BETWEEN_NOW_AND_PRE_ALT_TIME: "));  _serialOpenLog->println(BETWEEN_NOW_AND_PRE_ALT_TIME);
- //       }
- //     }
- //     _preAltSavedTime = millis();
- //   }
- // }
 
 //  // 時間で着地検知
 //  if (_startDroppingTime != 0) {
@@ -402,8 +402,8 @@ void Cansat::goal() { //State: 7
 * @brief ステートを手動で変更する
 * @detail ステートを受け取り，ASCII文字から48引いて10進数に変換
 */
-void Cansat::switchStateTo(byte state) {
-  _state = (int) state - 48;
+void Cansat::switchStateTo(int state) {
+  _state = state;
   Serial.print(F("Switch to "));
   Serial.println(_state);
 }

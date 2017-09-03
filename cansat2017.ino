@@ -74,8 +74,16 @@ void loop() {
     byte inputState = Serial.read();
     Serial.print(F("\n"));
     Serial.print(F("I received: "));   // 受信データを送りかえす
-    cansat.switchStateTo(inputState);
+    cansat.switchStateTo((int) inputState - 48);
   }
+
+  cansat.radio.getData();
+  if(cansat.radio.lastState!=cansat.radio.stateData){
+    cansat.switchStateTo(cansat.radio.stateData);
+    cansat.radio.lastState = cansat.radio.stateData;
+  }
+  Serial.print(F("State Received From XBee:                      ")); Serial.println(cansat.radio.stateData);
+  
 
   // cansatの状態(State)に応じて処理を変更
   cansat.openlog.saveErrorOnSD("State: "); cansat.openlog.saveErrorOnSD(String(cansat._state));

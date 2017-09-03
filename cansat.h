@@ -49,7 +49,7 @@ public:
   void judgeStucking();
 
   // State Switcher
-  void switchStateTo(byte state);
+  void switchStateTo(int state);
 
   // Variables to save
   int _state=0;
@@ -60,6 +60,7 @@ public:
   unsigned long _startLandingTime=0;
   unsigned long _startRunningTime=0;
   unsigned long _startReleasingTime=0;
+  unsigned long _startStuckingTime=0;
 
   unsigned long _lastGpsTime=0;
   float _lastGpsLat=0;
