@@ -238,9 +238,66 @@ void Cansat::running() { //State: 4
       }
     // ゴールまで
     }else{
-      guidance(gps._lat, gps._lon, nineaxis.deg, _destLat, _destLon);
-      if (fabs(_destLat - gps._lat) * 100000 <= GOAL_THRE && fabs(_destLon - gps._lon) * 100000 <= GOAL_THRE){
-        _state = GOAL;
+      if(LONG_RUN_MODE){
+        if(millis()-_startRunningTime >= 10*60*1000){
+          Serial.println(F("Goal: "));
+          if(DEBUG_OPENLOG) _serialOpenLog->println(F("Goal: "));
+          guidance(gps._lat, gps._lon, nineaxis.deg, _destLat, _destLon);
+          if (fabs(_destLat - gps._lat) * 100000 <= GOAL_THRE && fabs(_destLon - gps._lon) * 100000 <= GOAL_THRE){
+            _state = GOAL;
+          }
+        }else{
+          // @yagami ground
+          // 中央   35.554812, 139.656548
+          // 中央下 35.554576, 139.656450
+          // 中央上 35.554964, 139.656640
+          // 左下   35.554764, 139.655920
+          // 右下   35.554518, 139.656764
+          // 右上   35.554865, 139.656920
+          // 左上   35.555144, 139.656110
+          if(curr_state%4==0){
+            Serial.println(F("Left Bottom: "));
+            if(DEBUG_OPENLOG) _serialOpenLog->println(F("Left Bottom: "));
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554576, 139.656450); // 左下
+            if (fabs(35.554576 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656450 - gps._lon) * 100000 <= GOAL_THRE){
+              leftMotor.stopSlowly();
+              rightMotor.stopSlowly();
+              curr_state++;
+            }
+          }else if(curr_state%4==1){
+            Serial.println(F("Right Bottom: "));
+            if(DEBUG_OPENLOG) _serialOpenLog->println(F("Right Bottom: "));
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554600, 139.656320); // 右下
+            if (fabs(35.554600 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656320 - gps._lon) * 100000 <= GOAL_THRE){
+              leftMotor.stopSlowly();
+              rightMotor.stopSlowly();
+              curr_state++;
+            }
+          }else if(curr_state%4==2){
+            Serial.println(F("Right Top: "));
+            if(DEBUG_OPENLOG) _serialOpenLog->println(F("Right Top: "));
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554648, 139.656900); // 右上
+            if (fabs(35.554648 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656900 - gps._lon) * 100000 <= GOAL_THRE){
+              leftMotor.stopSlowly();
+              rightMotor.stopSlowly();
+              curr_state++;
+            }
+          }else if(curr_state%4==3){
+            Serial.println(F("Left Top: "));
+            if(DEBUG_OPENLOG) _serialOpenLog->println(F("Left Top: "));
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554964, 139.656640); // 左上
+            if (fabs(35.554964 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656640 - gps._lon) * 100000 <= GOAL_THRE){
+              leftMotor.stopSlowly();
+              rightMotor.stopSlowly();
+              curr_state++;
+            }
+          }
+        }
+      }else{
+        guidance(gps._lat, gps._lon, nineaxis.deg, _destLat, _destLon);
+        if (fabs(_destLat - gps._lat) * 100000 <= GOAL_THRE && fabs(_destLon - gps._lon) * 100000 <= GOAL_THRE){
+          _state = GOAL;
+        }
       }
     }
 //    judgeStucking();

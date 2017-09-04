@@ -16,6 +16,8 @@
 #include "openlog.h"
 #include "radio.h"
 
+#define LONG_RUN_MODE true
+
 class Cansat {
 public:
   // Initialization (Constructor and Destructor)
@@ -54,6 +56,7 @@ public:
   // Variables to save
   int _state=0;
   int _running_state=1;
+  int curr_state=0;
   unsigned long _startPreparingTime=0;
   unsigned long _startFlyingTime=0;
   unsigned long _startDroppingTime=0;
