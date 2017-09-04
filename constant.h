@@ -48,7 +48,7 @@
   // 高度
 #define ALT_THRE    5                       // 10秒間でGPSの高度が5m変化しないかどうかの閾値
 #define COUNT_DROP2LAND_GPS_LOOP_THRE 5     // 着地検知用        (10秒間でGPSの高度が5m変化していないループ回数の閾値)
-#define BETWEEN_NOW_AND_PRE_ALT_TIME 240000 // 前回GPSの高度を保存した時刻と今の時刻との差の閾値
+#define ALT_TIME_THRE   240000              // 前回GPSの高度を保存した時刻と今の時刻との差の閾値
   // 冗長系
 #define LANDING_TIME_THRE 180000      // 着地検知の冗長系：時間でシークエンス移行
 // landing()

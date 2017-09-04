@@ -62,14 +62,15 @@ void setup() {
 // ------------------------------------------------------------- LOOP ----------------------------------------------------------------------//
 void loop() {
   cansat.openlog.openErrorFile();
-  // それぞれのセンサーにOpenLogを渡し，errorメッセージを記録
+  Serial.print(F("millis: ")); Serial.println(millis());
+  cansat.openlog.saveErrorOnSD("millis: "+String(millis()));
 
   // 位置が取れない場合どうする？ -> 位置推定出来るほど正確なセンサーとモータではないので諦める．
-  cansat.openlog.saveErrorOnSD("Reading GPS Value ...");
+  cansat.openlog.saveErrorOnSD("GPS");
   cansat.gps.readGpsValue();
 
   // 9軸が取れない場合はどうする？ flag渡して9軸が不可ならgpsのlat/lon/speed/degから計算
-  cansat.openlog.saveErrorOnSD("Reading 9 Axis Value ...");
+  cansat.openlog.saveErrorOnSD("9Axis");
   cansat.nineaxis.readNineAxisValue();
 
   // 手動でcansatの状態を切り替える．
@@ -85,12 +86,10 @@ void loop() {
     cansat.switchStateTo(cansat.radio.stateData);
     cansat.radio.lastState = cansat.radio.stateData;
   }
-  Serial.print(F("State Received From XBee:                      ")); Serial.println(cansat.radio.stateData);
-
 
   // cansatの状態(State)に応じて処理を変更
-  cansat.openlog.saveErrorOnSD("State: "); cansat.openlog.saveErrorOnSD(String(cansat._state));
-  Serial.print(F("State: ")); Serial.println(cansat._state);
+  cansat.openlog.saveErrorOnSD("State: "+String(cansat._state)); // cansat.openlog.saveErrorOnSD(String(cansat._state));
+  Serial.println(F("State: "+String(cansat._state)));
     switch (cansat._state) {
       case PREPARING: // 0
         cansat.light.readLightValue();
@@ -101,7 +100,6 @@ void loop() {
         cansat.flying();
         break;
       case DROPPING: // 2
-        Serial.println("Dropping...");
         cansat.dropping();
         break;
       case LANDING: // 3
@@ -137,8 +135,8 @@ void loop() {
              + String(cansat.gps._alt) + ", "
              + String(cansat.nineaxis.deg_filt) + ", "
              + String(cansat._direct);
-  Serial.println("Sending Data to Xbee...");
-  cansat.openlog.saveErrorOnSD("Sending Data to Xbee...");
+  Serial.println("Xbee");
+  cansat.openlog.saveErrorOnSD("Xbee");
   if(cansat._state!=FLYING) cansat.radio.send(xbee_data);
 
   // 送信用のデータ作成

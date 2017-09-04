@@ -35,6 +35,7 @@ void Cansat::preparing() { // State: 0
   // このループ入った時間を保存．
   if (_startPreparingTime == 0) {
     _startPreparingTime = millis();
+
     // LED は光らせない
     analogWrite(PIN_LED_BLUE, 0);
     analogWrite(PIN_LED_GREEN, 0);
@@ -45,15 +46,11 @@ void Cansat::preparing() { // State: 0
   rightMotor.stop();
   leftMotor.stop();
 
-  Serial.print(F("Start Preparing Time: "));          Serial.print(_startPreparingTime);
-  Serial.print(F("   Now: "));                        Serial.println(millis());
-  if(DEBUG_OPENLOG){
-    _serialOpenLog->print(F("Start Preparing Time: ")); _serialOpenLog->print(_startPreparingTime);
-    _serialOpenLog->print(F("   Now: "));               _serialOpenLog->println(millis());
-  }
   // Flyingのジャッジ
   if (light._lightValue < PRE2FLY_THRE) {
     _countPreLightLoop++;
+    Serial.print(F("Loop: ")); Serial.println(_countPreLightLoop);
+    if(DEBUG_OPENLOG) _serialOpenLog->print(F("Loop: ")); _serialOpenLog->println(_countPreLightLoop);
     if (_countPreLightLoop > COUNT_PRE2FLY_LOOP_THRE) _state = FLYING;
   } else {
     _countPreLightLoop = 0;
@@ -64,6 +61,7 @@ void Cansat::flying() { //State: 1
   // このループ入った時間を保存．
   if (_startFlyingTime == 0) {
     _startFlyingTime = millis();
+
     analogWrite(PIN_LED_BLUE, 255);
     analogWrite(PIN_LED_GREEN, 0);
     analogWrite(PIN_LED_RED, 0);
@@ -73,16 +71,11 @@ void Cansat::flying() { //State: 1
   rightMotor.stop();
   leftMotor.stop();
 
-  Serial.print(F("Start Flying Time: "));           Serial.print(_startFlyingTime);
-  Serial.print(F("   Now: "));                      Serial.println(millis());
-  if(DEBUG_OPENLOG){
-    _serialOpenLog->print(F("Start Flying Time: "));  _serialOpenLog->print(_startFlyingTime);
-    _serialOpenLog->print(F("   Now: "));             _serialOpenLog->println(millis());
-  }
-
   // Droppingのジャッジ
   if (light._lightValue > FLY2DROP_THRE) {
     _countFlyLightLoop++;
+    Serial.print(F("Loop: ")); Serial.println(_countFlyLightLoop);
+    if(DEBUG_OPENLOG) _serialOpenLog->print(F("Loop: ")); _serialOpenLog->println(_countFlyLightLoop);
     if (_countFlyLightLoop > COUNT_FLY2DROP_LOOP_THRE) _state = DROPPING;
   } else {
     _countFlyLightLoop = 0;
@@ -93,33 +86,24 @@ void Cansat::dropping() { //State: 2
   // このループ入った時間を保存．
   if (_startDroppingTime == 0) {
     _startDroppingTime = millis();
+
     // 光ピコピコ
     analogWrite(PIN_LED_BLUE, 0);
     analogWrite(PIN_LED_GREEN, 255);
     analogWrite(PIN_LED_RED, 0);
   }
 
-  Serial.print(F("Start Dropping Time: "));     Serial.print(_startDroppingTime);
-  Serial.print(F("   Now: "));                  Serial.println(millis());
-  if(DEBUG_OPENLOG){
-    _serialOpenLog->print(F("Start Dropping Time: "));  _serialOpenLog->print(_startDroppingTime);
-    _serialOpenLog->print(F("   Now: "));               _serialOpenLog->println(millis());
-  }
-
-
   // 加速度とジャイロから着地検知
   if ((pow(nineaxis.ax, 2) + pow(nineaxis.ay, 2) + pow(nineaxis.az, 2)) < ACCEL_THRE ^ 2) { //　加速度の合計が1.2?以}下
     if (fabs(nineaxis.gx) < GYRO_THRE && fabs(nineaxis.gy) < GYRO_THRE && fabs(nineaxis.gz) < GYRO_THRE) {
       _countDrop2LandLoop++;
+      Serial.print(F("Loop: ")); Serial.println(_countDrop2LandLoop);
+      if(DEBUG_OPENLOG) _serialOpenLog->print(F("Loop: ")); _serialOpenLog->println(_countDrop2LandLoop);
       if (_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE){
         _state = LANDING;
 
         Serial.println(F("JudgeLanding: Accel&Gyro"));
-        Serial.print(F("millis: "));                              Serial.println(millis());
-        if(DEBUG_OPENLOG){
-          _serialOpenLog->println(F("JudgeLanding: Accel&Gyro"));
-          _serialOpenLog->print(F("millis: "));                   _serialOpenLog->println(millis());
-        }
+        if(DEBUG_OPENLOG) _serialOpenLog->println(F("JudgeLanding: Accel&Gyro"));
       }
     } else {
       _countDrop2LandLoop = 0;
@@ -127,46 +111,38 @@ void Cansat::dropping() { //State: 2
   }
 
   // 高度で着地検知
-  if (_preAlt == 0) {
-    if (!(gps._lat <= 1 && gps._lon <= 1)) {
-      _preAlt = gps._alt;                 // これ高度0だったらどうするん
-      _preAltSavedTime = millis();
+  if(_lastAlt == 0) {
+    if(!(gps._lat <= 1 && gps._lon <= 1)){
+      _lastAlt = gps._alt;                 // これ高度0だったらどうするん
+      _lastAltSavedTime = millis();
     }
-  } else {
-    if (millis() - _preAltSavedTime > BETWEEN_NOW_AND_PRE_ALT_TIME) {
-      if ((_preAlt<gps._alt) && (_preAlt - gps._alt<ALT_THRE)) {
+  }else{
+    if(millis() - _lastAltSavedTime > ALT_TIME_THRE){
+      if((_lastAlt>=gps._alt) && (_lastAlt-gps._alt<ALT_THRE)){
         _state = LANDING;
- 
+
         Serial.println(F("JudgeLanding: GPS Altitude"));
-        Serial.print(F("PreAltSavedTime: "));                             Serial.print(_preAltSavedTime);
-        Serial.print(F("   Now: "));                                      Serial.print(millis());
-        Serial.print(F("   BETWEEN_NOW_AND_PRE_ALT_TIME: "));             Serial.println(BETWEEN_NOW_AND_PRE_ALT_TIME);
-        if(DEBUG_OPENLOG){
-          _serialOpenLog->println(F("JudgeLanding: GPS Altitude"));
-          _serialOpenLog->print(F("PreAltSavedTime: "));                  _serialOpenLog->print(_preAltSavedTime);
-          _serialOpenLog->print(F("   Now: "));                           _serialOpenLog->print(millis());
-          _serialOpenLog->print(F("   BETWEEN_NOW_AND_PRE_ALT_TIME: "));  _serialOpenLog->println(BETWEEN_NOW_AND_PRE_ALT_TIME);
-        }
+        if(DEBUG_OPENLOG) _serialOpenLog->println(F("JudgeLanding: GPS Altitude"));
       }
-      _preAltSavedTime = millis();
+      _lastAlt = gps._alt;
+      _lastAltSavedTime = millis();
+    }
+    Serial.print(F("Last Alt: "));             Serial.print(_lastAlt);
+    Serial.print(F("Alt: "));                  Serial.println(gps.alt);
+    if(DEBUG_OPENLOG){
+      _serialOpenLog->print(F("Last Alt: "));  _serialOpenLog->print(_lastAlt);
+      _serialOpenLog->print(F("Alt: "));       _serialOpenLog->println(gps.alt);
     }
   }
 
-//  // 時間で着地検知
-//  if (_startDroppingTime != 0) {
-//    if (millis() - _startDroppingTime > LANDING_TIME_THRE) {
-//      _state = LANDING;
-//
-//      Serial.print(F("Start Dropping Time: "));     Serial.print(_startDroppingTime);
-//      Serial.print(F("   Now: "));                  Serial.print(millis());
-//      Serial.print(F("   LANDING_TIME_THRE: "));    Serial.println(LANDING_TIME_THRE);
-//      if(DEBUG_OPENLOG){
-//        _serialOpenLog->print(F("Start Dropping Time: "));  _serialOpenLog->print(_startDroppingTime);
-//        _serialOpenLog->print(F("   Now: "));               _serialOpenLog->print(millis());
-//        _serialOpenLog->print(F("   LANDING_TIME_THRE: ")); _serialOpenLog->println(LANDING_TIME_THRE);
-//      }
-//    }
-//  }
+ // 時間で着地検知
+ if (_startDroppingTime != 0) {
+   if (millis() - _startDroppingTime > LANDING_TIME_THRE) {
+     _state = LANDING;
+     Serial.println(F("JudgeLanding: Time"));
+     if(DEBUG_OPENLOG) _serialOpenLog->println(F("JudgeLanding: Time"));
+   }
+ }
 }
 
 void Cansat::landing() { //State: 3
@@ -180,21 +156,12 @@ void Cansat::landing() { //State: 3
   }
 
   // Landing検知したらReleasePin焼き切る
-  digitalWrite(PIN_RELEASING_XBEE2, HIGH);
+  digitalWrite(PIN_RELEASING, HIGH);
   // ある一定時間過ぎたらRunningにする
   if (_startLandingTime != 0) {
     if (millis() - _startLandingTime > RELEASING_TIME_THRE) {
-      digitalWrite(PIN_RELEASING_XBEE2, LOW);
+      digitalWrite(PIN_RELEASING, LOW);
       _state = RUNNING;
-
-      Serial.print(F("Start Landing Time: "));              Serial.print(_startLandingTime);
-      Serial.print(F("   Now: "));                          Serial.print(millis());
-      Serial.print(F("   RELEASING_TIME_THRE: "));          Serial.println(RELEASING_TIME_THRE);
-      if(DEBUG_OPENLOG){
-        _serialOpenLog->print(F("Start Landing Time: "));     _serialOpenLog->print(_startLandingTime);
-        _serialOpenLog->print(F("   Now: "));                 _serialOpenLog->print(millis());
-        _serialOpenLog->print(F("   RELEASING_TIME_THRE: ")); _serialOpenLog->println(RELEASING_TIME_THRE);
-      }
     }
   }
 }
@@ -218,20 +185,26 @@ void Cansat::running() { //State: 4
       sub_goal1_lon = (_destLon-gps._lon)/3 + gps._lon;
       sub_goal2_lat = (_destLat-gps._lat)*2/3 + gps._lat;
       sub_goal2_lon = (_destLon-gps._lon)*2/3 + gps._lon;
+      Serial.print(F("DestLat: "));       Serial.print(sub_goal1_lat); Serial.print(F("   ")); Serial.println(sub_goal2_lat);
+      Serial.print(F("   DestLon: "));    Serial.print(sub_goal1_lon); Serial.print(F("   ")); Serial.println(sub_goal2_lon);
+      if(DEBUG_OPENLOG){
+        _serialOpenLog->print(F("DestLat: "));    _serialOpenLog->print(sub_goal1_lat); _serialOpenLog->print(F("   ")); _serialOpenLog->println(sub_goal2_lat);
+        _serialOpenLog->print(F("   DestLon: ")); _serialOpenLog->print(sub_goal1_lon); _serialOpenLog->print(F("   ")); _serialOpenLog->println(sub_goal2_lon);
+      }
     }
 
     // Xbee1 を落とすまで．
     if(_running_state==1){
-      Serial.println(F("Xbee 1: "));
-      if(DEBUG_OPENLOG) _serialOpenLog->println(F("Xbee 1: "));
+      Serial.println(F("Xbee1"));
+      if(DEBUG_OPENLOG) _serialOpenLog->println(F("Xbee1"));
       guidance(gps._lat, gps._lon, nineaxis.deg, sub_goal1_lat, sub_goal1_lon);
       if (fabs(sub_goal1_lat - gps._lat) * 100000 <= GOAL_THRE && fabs(sub_goal1_lon - gps._lon) * 100000 <= GOAL_THRE){
         _state=RELEASING;
       }
     // Xbee2 を落とすまで．
     }else if(_running_state==2){
-      Serial.println(F("Xbee 2: "));
-      if(DEBUG_OPENLOG) _serialOpenLog->println(F("Xbee 2: "));
+      Serial.println(F("Xbee2"));
+      if(DEBUG_OPENLOG) _serialOpenLog->println(F("Xbee2"));
       guidance(gps._lat, gps._lon, nineaxis.deg, sub_goal2_lat, sub_goal2_lon);
       if (fabs(sub_goal2_lat - gps._lat) * 100000 <= GOAL_THRE && fabs(sub_goal2_lon - gps._lon) * 100000 <= GOAL_THRE){
         _state=RELEASING;
@@ -240,8 +213,8 @@ void Cansat::running() { //State: 4
     }else{
       if(LONG_RUN_MODE){
         if(millis()-_startRunningTime >= 10*60*1000){
-          Serial.println(F("Goal: "));
-          if(DEBUG_OPENLOG) _serialOpenLog->println(F("Goal: "));
+          Serial.println(F("Goal"));
+          if(DEBUG_OPENLOG) _serialOpenLog->println(F("Goal"));
           guidance(gps._lat, gps._lon, nineaxis.deg, _destLat, _destLon);
           if (fabs(_destLat - gps._lat) * 100000 <= GOAL_THRE && fabs(_destLon - gps._lon) * 100000 <= GOAL_THRE){
             _state = GOAL;
@@ -256,37 +229,37 @@ void Cansat::running() { //State: 4
           // 右上   35.554865, 139.656920
           // 左上   35.555144, 139.656110
           if(curr_state%4==0){
-            Serial.println(F("Left Bottom: "));
-            if(DEBUG_OPENLOG) _serialOpenLog->println(F("Left Bottom: "));
-            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554576, 139.656450); // 左下
-            if (fabs(35.554576 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656450 - gps._lon) * 100000 <= GOAL_THRE){
+            Serial.println(F("LeftBottom"));
+            if(DEBUG_OPENLOG) _serialOpenLog->println(F("LeftBottom"));
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554764, 139.655920); // 左下
+            if (fabs(35.554764 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.655920 - gps._lon) * 100000 <= GOAL_THRE){
               leftMotor.stopSlowly();
               rightMotor.stopSlowly();
               curr_state++;
             }
           }else if(curr_state%4==1){
-            Serial.println(F("Right Bottom: "));
-            if(DEBUG_OPENLOG) _serialOpenLog->println(F("Right Bottom: "));
-            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554600, 139.656320); // 右下
-            if (fabs(35.554600 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656320 - gps._lon) * 100000 <= GOAL_THRE){
+            Serial.println(F("RightBottom"));
+            if(DEBUG_OPENLOG) _serialOpenLog->println(F("RightBottom"));
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554518, 139.656764); // 右下
+            if (fabs(35.554518 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656764 - gps._lon) * 100000 <= GOAL_THRE){
               leftMotor.stopSlowly();
               rightMotor.stopSlowly();
               curr_state++;
             }
           }else if(curr_state%4==2){
-            Serial.println(F("Right Top: "));
-            if(DEBUG_OPENLOG) _serialOpenLog->println(F("Right Top: "));
-            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554648, 139.656900); // 右上
-            if (fabs(35.554648 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656900 - gps._lon) * 100000 <= GOAL_THRE){
+            Serial.println(F("RightTop"));
+            if(DEBUG_OPENLOG) _serialOpenLog->println(F("RightTop"));
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554865, 139.656920); // 右上
+            if (fabs(35.554865 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656920 - gps._lon) * 100000 <= GOAL_THRE){
               leftMotor.stopSlowly();
               rightMotor.stopSlowly();
               curr_state++;
             }
           }else if(curr_state%4==3){
-            Serial.println(F("Left Top: "));
-            if(DEBUG_OPENLOG) _serialOpenLog->println(F("Left Top: "));
-            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554964, 139.656640); // 左上
-            if (fabs(35.554964 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656640 - gps._lon) * 100000 <= GOAL_THRE){
+            Serial.println(F("LeftTop"));
+            if(DEBUG_OPENLOG) _serialOpenLog->println(F("LeftTop"));
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.555144, 139.656110); // 左上
+            if (fabs(35.555144 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656110 - gps._lon) * 100000 <= GOAL_THRE){
               leftMotor.stopSlowly();
               rightMotor.stopSlowly();
               curr_state++;
@@ -345,24 +318,18 @@ void Cansat::guidance(float lat, float lon, float deg, float goalLat, float goal
     leftMotor.setSpeedAt(170 * (1 - _bodyAngle / 180));
   }
 
-  Serial.print(F("Destination Lat: ")); Serial.print(goalLat); Serial.print("   ");
-  Serial.print(F("Destination Lon: ")); Serial.println(goalLon);
-  Serial.print(F("Current Lat: ")); Serial.print(lat); Serial.print("   ");
-  Serial.print(F("Current Lon: ")); Serial.println(lon);
   Serial.print(F("Direction: ")); Serial.print(_bodyAngle); Serial.println(F(" [deg]"))
   Serial.print(F("Distance: ")); Serial.print(_distance); Serial.println(F(" [m]"))
   if(DEBUG_OPENLOG){
-    _serialOpenLog->print(F("Destination Lat: ")); _serialOpenLog->print(goalLat); _serialOpenLog->print("   ");
-    _serialOpenLog->print(F("Destination Lon: ")); _serialOpenLog->println(goalLon);
-    _serialOpenLog->print(F("Current Lat: ")); _serialOpenLog->print(lat); _serialOpenLog->print("   ");
-    _serialOpenLog->print(F("Current Lon: ")); _serialOpenLog->println(lon);
     _serialOpenLog->print(F("Direction: ")); _serialOpenLog->print(_bodyAngle); _serialOpenLog->println(F(" [deg]"))
     _serialOpenLog->print(F("Distance: ")); _serialOpenLog->print(_distance); _serialOpenLog->println(F(" [m]"))
   }
 }
 
 void Cansat::releasing() { //State: 5
-  if(_startReleasingTime==0) _startReleasingTime=millis();
+  if(_startReleasingTime==0){
+    _startReleasingTime=millis();
+  }
   leftMotor.stopSlowly();
   rightMotor.stopSlowly();
 
@@ -372,14 +339,6 @@ void Cansat::releasing() { //State: 5
       digitalWrite(PIN_RELEASING_XBEE1, LOW);
       _state=RUNNING;
       _running_state=2;
-      Serial.print(F("Start Releasing Time: "));              Serial.print(_startReleasingTime);
-      Serial.print(F("   Now: "));                          Serial.print(millis());
-      Serial.print(F("   RELEASING_TIME_THRE: "));          Serial.println(RELEASING_TIME_THRE);
-      if(DEBUG_OPENLOG){
-        _serialOpenLog->print(F("Start Releasing Time: "));     _serialOpenLog->print(_startReleasingTime);
-        _serialOpenLog->print(F("   Now: "));                 _serialOpenLog->print(millis());
-        _serialOpenLog->print(F("   RELEASING_TIME_THRE: ")); _serialOpenLog->println(RELEASING_TIME_THRE);
-      }
       _startReleasingTime=0;
     }
   } else if (_running_state == 2) {
@@ -388,14 +347,6 @@ void Cansat::releasing() { //State: 5
       digitalWrite(PIN_RELEASING_XBEE2, LOW);
       _state=RUNNING;
       _running_state=3;
-      Serial.print(F("Start Releasing Time: "));              Serial.print(_startReleasingTime);
-      Serial.print(F("   Now: "));                          Serial.print(millis());
-      Serial.print(F("   RELEASING_TIME_THRE: "));          Serial.println(RELEASING_TIME_THRE);
-      if(DEBUG_OPENLOG){
-        _serialOpenLog->print(F("Start Releasing Time: "));     _serialOpenLog->print(_startReleasingTime);
-        _serialOpenLog->print(F("   Now: "));                 _serialOpenLog->print(millis());
-        _serialOpenLog->print(F("   RELEASING_TIME_THRE: ")); _serialOpenLog->println(RELEASING_TIME_THRE);
-      }
       _startReleasingTime=0;
     }
   }
@@ -439,7 +390,6 @@ void Cansat::stucking() { //State: 6
   // Stuckした時の時間を保存・記録
   if (_startStuckingTime == 0){
     _startStuckingTime = millis();
-    Serial.print(F("Start Stucking Time: ")); Serial.println(_startStuckingTime);
   }
 
   // 5秒ごとに前進・後進の切り替え
