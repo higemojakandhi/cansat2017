@@ -57,6 +57,7 @@ public:
   int _state=0;
   int _running_state=1;
   int curr_state=0;
+  unsigned long light_count=0;
   unsigned long _startPreparingTime=0;
   unsigned long _startFlyingTime=0;
   unsigned long _startDroppingTime=0;

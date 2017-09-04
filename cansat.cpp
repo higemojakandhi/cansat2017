@@ -167,10 +167,11 @@ void Cansat::landing() { //State: 3
 }
 
 void Cansat::running() { //State: 4
-  // 走行中はLED光らせない
-  analogWrite(PIN_LED_BLUE, 0);
-  analogWrite(PIN_LED_GREEN, 0);
-  analogWrite(PIN_LED_RED, 0);
+  // 光点滅．色が変化しない場合はフリーズしたとすぐわかるので便利かと．
+  if(light_count%3==0) analogWrite(PIN_LED_BLUE, 0);  analogWrite(PIN_LED_RED, 255);
+  if(light_count%3==1) analogWrite(PIN_LED_RED, 0);   analogWrite(PIN_LED_GREEN, 255);
+  if(light_count%3==2) analogWrite(PIN_LED_GREEN, 0); analogWrite(PIN_LED_BLUE, 255);
+  light_count++;
 
   // GPSが入ってこなかったらとりあえずうごかない
   // GPSの値0なはずだけど，ログ見ると0.000となっていて小数点が不安だったので一応1以下にした
@@ -186,10 +187,10 @@ void Cansat::running() { //State: 4
       sub_goal2_lat = (_destLat-gps._lat)*2/3 + gps._lat;
       sub_goal2_lon = (_destLon-gps._lon)*2/3 + gps._lon;
       Serial.print(F("DestLat: "));       Serial.print(sub_goal1_lat); Serial.print(F("   ")); Serial.println(sub_goal2_lat);
-      Serial.print(F("   DestLon: "));    Serial.print(sub_goal1_lon); Serial.print(F("   ")); Serial.println(sub_goal2_lon);
+      Serial.print(F("DestLon: "));       Serial.print(sub_goal1_lon); Serial.print(F("   ")); Serial.println(sub_goal2_lon);
       if(DEBUG_OPENLOG){
         _serialOpenLog->print(F("DestLat: "));    _serialOpenLog->print(sub_goal1_lat); _serialOpenLog->print(F("   ")); _serialOpenLog->println(sub_goal2_lat);
-        _serialOpenLog->print(F("   DestLon: ")); _serialOpenLog->print(sub_goal1_lon); _serialOpenLog->print(F("   ")); _serialOpenLog->println(sub_goal2_lon);
+        _serialOpenLog->print(F("DestLon: "));    _serialOpenLog->print(sub_goal1_lon); _serialOpenLog->print(F("   ")); _serialOpenLog->println(sub_goal2_lon);
       }
     }
 
@@ -231,8 +232,8 @@ void Cansat::running() { //State: 4
           if(curr_state%4==0){
             Serial.println(F("LeftBottom"));
             if(DEBUG_OPENLOG) _serialOpenLog->println(F("LeftBottom"));
-            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554764, 139.655920); // 左下
-            if (fabs(35.554764 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.655920 - gps._lon) * 100000 <= GOAL_THRE){
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554576, 139.656450); // 左下
+            if (fabs(35.554576 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656450 - gps._lon) * 100000 <= GOAL_THRE){
               leftMotor.stopSlowly();
               rightMotor.stopSlowly();
               curr_state++;
@@ -240,8 +241,8 @@ void Cansat::running() { //State: 4
           }else if(curr_state%4==1){
             Serial.println(F("RightBottom"));
             if(DEBUG_OPENLOG) _serialOpenLog->println(F("RightBottom"));
-            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554518, 139.656764); // 右下
-            if (fabs(35.554518 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656764 - gps._lon) * 100000 <= GOAL_THRE){
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554600, 139.656320); // 右下
+            if (fabs(35.554600 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656320 - gps._lon) * 100000 <= GOAL_THRE){
               leftMotor.stopSlowly();
               rightMotor.stopSlowly();
               curr_state++;
@@ -249,8 +250,8 @@ void Cansat::running() { //State: 4
           }else if(curr_state%4==2){
             Serial.println(F("RightTop"));
             if(DEBUG_OPENLOG) _serialOpenLog->println(F("RightTop"));
-            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554865, 139.656920); // 右上
-            if (fabs(35.554865 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656920 - gps._lon) * 100000 <= GOAL_THRE){
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554648, 139.656900); // 右上
+            if (fabs(35.554648 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656900 - gps._lon) * 100000 <= GOAL_THRE){
               leftMotor.stopSlowly();
               rightMotor.stopSlowly();
               curr_state++;
@@ -258,8 +259,8 @@ void Cansat::running() { //State: 4
           }else if(curr_state%4==3){
             Serial.println(F("LeftTop"));
             if(DEBUG_OPENLOG) _serialOpenLog->println(F("LeftTop"));
-            guidance(gps._lat, gps._lon, nineaxis.deg, 35.555144, 139.656110); // 左上
-            if (fabs(35.555144 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656110 - gps._lon) * 100000 <= GOAL_THRE){
+            guidance(gps._lat, gps._lon, nineaxis.deg, 35.554964, 139.656640); // 左上
+            if (fabs(35.554964 - gps._lat) * 100000 <= GOAL_THRE && fabs(139.656640 - gps._lon) * 100000 <= GOAL_THRE){
               leftMotor.stopSlowly();
               rightMotor.stopSlowly();
               curr_state++;
@@ -423,6 +424,7 @@ void Cansat::goal() { //State: 7
   analogWrite(PIN_LED_GREEN, 0); delay(100);
   analogWrite(PIN_LED_RED, 0); delay(100);
 }
+
 
 /**
 * @func switchStateTo()
