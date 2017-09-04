@@ -36,15 +36,15 @@
 // THRESHOLD
 // preparing()
 #define PRE2FLY_THRE 100              // キャリア格納判定用　（光センサの閾値）
-#define COUNT_PRE2FLY_LOOP_THRE 100   // キャリア格納判定用  (閾値以下の値になる連続の回数の閾値
+#define COUNT_PRE2FLY_LOOP_THRE 15   // キャリア格納判定用  (閾値以下の値になる連続の回数の閾値
 // flying()
 #define FLY2DROP_THRE 100             // 放出判定用　　　　　（光センサの閾値）
-#define COUNT_FLY2DROP_LOOP_THRE 100  // 放出判定用          (閾値以上の値になる連続の回数の閾値
+#define COUNT_FLY2DROP_LOOP_THRE 15  // 放出判定用          (閾値以上の値になる連続の回数の閾値
 // dropping()
   // 加速度
 #define ACCEL_THRE  1.2               // 加速度の閾値
 #define GYRO_THRE   10                // ジャイロの閾値
-#define COUNT_DROP2LAND_LOOP_THRE 100 // 着地検知用          (ジャイロ・加速度の連続の回数の閾値
+#define COUNT_DROP2LAND_LOOP_THRE 15 // 着地検知用          (ジャイロ・加速度の連続の回数の閾値
   // 高度
 #define ALT_THRE    5                       // 10秒間でGPSの高度が5m変化しないかどうかの閾値
 #define COUNT_DROP2LAND_GPS_LOOP_THRE 5     // 着地検知用        (10秒間でGPSの高度が5m変化していないループ回数の閾値)
@@ -58,6 +58,6 @@
 // guidance()
 #define ANGLE_THRE 20   // 目的地が角度以下なら真っ直ぐ進む
 // judgeStucking()
-#define STUCKING_JUDGE_TIME_THRE 5000 // スタック検知する間隔
+#define STUCKING_JUDGE_TIME_THRE 10000 // スタック検知する間隔
 
 #endif
