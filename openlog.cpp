@@ -59,7 +59,10 @@ void OpenLog::openErrorFile(){
 }
 
 void OpenLog::saveErrorOnSD(String error){
-  if(DEBUG_OPENLOG) _serial->println(error);
+  if(DEBUG_OPENLOG){
+    _serial->println(error);
+    delay(50);
+  }
 }
 
 void OpenLog::saveDataOnSD(String alldata){
