@@ -103,29 +103,29 @@ void Cansat::dropping() { //State: 2
   Serial.print(F("   Now: "));                  Serial.println(millis());
   if(DEBUG_OPENLOG){
     _serialOpenLog->print(F("Start Dropping Time: "));  _serialOpenLog->print(_startDroppingTime);
-    _serialOpenLog->print(F("   Now: "));               _serialOpenLog->print(millis());
+    _serialOpenLog->print(F("   Now: "));               _serialOpenLog->println(millis());
   }
 
 
-//  // 加速度とジャイロから着地検知
-//  if ((pow(nineaxis.ax, 2) + pow(nineaxis.ay, 2) + pow(nineaxis.az, 2)) < ACCEL_THRE ^ 2) { //　加速度の合計が1.2?以}下
-//    if (fabs(nineaxis.gx) < GYRO_THRE && fabs(nineaxis.gy) < GYRO_THRE && fabs(nineaxis.gz) < GYRO_THRE) {
-//      _countDrop2LandLoop++;
-//      if (_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE){
-//        _state = LANDING;
-//
-//        Serial.println(F("JudgeLanding: Accel&Gyro"));
-//        Serial.print(F("millis: "));                              Serial.println(millis());
-//        if(DEBUG_OPENLOG){
-//          _serialOpenLog->println(F("JudgeLanding: Accel&Gyro"));
-//          _serialOpenLog->print(F("millis: "));                   _serialOpenLog->println(millis());
-//        }
-//      }
-//    } else {
-//      _countDrop2LandLoop = 0;
-//    }
-//  }
- 
+  // 加速度とジャイロから着地検知
+  if ((pow(nineaxis.ax, 2) + pow(nineaxis.ay, 2) + pow(nineaxis.az, 2)) < ACCEL_THRE ^ 2) { //　加速度の合計が1.2?以}下
+    if (fabs(nineaxis.gx) < GYRO_THRE && fabs(nineaxis.gy) < GYRO_THRE && fabs(nineaxis.gz) < GYRO_THRE) {
+      _countDrop2LandLoop++;
+      if (_countDrop2LandLoop > COUNT_DROP2LAND_LOOP_THRE){
+        _state = LANDING;
+
+        Serial.println(F("JudgeLanding: Accel&Gyro"));
+        Serial.print(F("millis: "));                              Serial.println(millis());
+        if(DEBUG_OPENLOG){
+          _serialOpenLog->println(F("JudgeLanding: Accel&Gyro"));
+          _serialOpenLog->print(F("millis: "));                   _serialOpenLog->println(millis());
+        }
+      }
+    } else {
+      _countDrop2LandLoop = 0;
+    }
+  }
+
   // 高度で着地検知
   if (_preAlt == 0) {
     if (!(gps._lat <= 1 && gps._lon <= 1)) {
@@ -222,12 +222,16 @@ void Cansat::running() { //State: 4
 
     // Xbee1 を落とすまで．
     if(_running_state==1){
+      Serial.println(F("Xbee 1: "));
+      if(DEBUG_OPENLOG) _serialOpenLog->println(F("Xbee 1: "));
       guidance(gps._lat, gps._lon, nineaxis.deg, sub_goal1_lat, sub_goal1_lon);
       if (fabs(sub_goal1_lat - gps._lat) * 100000 <= GOAL_THRE && fabs(sub_goal1_lon - gps._lon) * 100000 <= GOAL_THRE){
         _state=RELEASING;
       }
     // Xbee2 を落とすまで．
     }else if(_running_state==2){
+      Serial.println(F("Xbee 2: "));
+      if(DEBUG_OPENLOG) _serialOpenLog->println(F("Xbee 2: "));
       guidance(gps._lat, gps._lon, nineaxis.deg, sub_goal2_lat, sub_goal2_lon);
       if (fabs(sub_goal2_lat - gps._lat) * 100000 <= GOAL_THRE && fabs(sub_goal2_lon - gps._lon) * 100000 <= GOAL_THRE){
         _state=RELEASING;
@@ -239,6 +243,7 @@ void Cansat::running() { //State: 4
         _state = GOAL;
       }
     }
+//    judgeStucking();
   }
 }
 
@@ -281,6 +286,21 @@ void Cansat::guidance(float lat, float lon, float deg, float goalLat, float goal
   } else if (_direct == -1) { //左
     rightMotor.setSpeedAt(255);
     leftMotor.setSpeedAt(170 * (1 - _bodyAngle / 180));
+  }
+
+  Serial.print(F("Destination Lat: ")); Serial.print(goalLat); Serial.print("   ");
+  Serial.print(F("Destination Lon: ")); Serial.println(goalLon);
+  Serial.print(F("Current Lat: ")); Serial.print(lat); Serial.print("   ");
+  Serial.print(F("Current Lon: ")); Serial.println(lon);
+  Serial.print(F("Direction: ")); Serial.print(_bodyAngle); Serial.println(F(" [deg]"))
+  Serial.print(F("Distance: ")); Serial.print(_distance); Serial.println(F(" [m]"))
+  if(DEBUG_OPENLOG){
+    _serialOpenLog->print(F("Destination Lat: ")); _serialOpenLog->print(goalLat); _serialOpenLog->print("   ");
+    _serialOpenLog->print(F("Destination Lon: ")); _serialOpenLog->println(goalLon);
+    _serialOpenLog->print(F("Current Lat: ")); _serialOpenLog->print(lat); _serialOpenLog->print("   ");
+    _serialOpenLog->print(F("Current Lon: ")); _serialOpenLog->println(lon);
+    _serialOpenLog->print(F("Direction: ")); _serialOpenLog->print(_bodyAngle); _serialOpenLog->println(F(" [deg]"))
+    _serialOpenLog->print(F("Distance: ")); _serialOpenLog->print(_distance); _serialOpenLog->println(F(" [m]"))
   }
 }
 

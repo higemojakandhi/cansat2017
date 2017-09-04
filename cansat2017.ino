@@ -23,7 +23,10 @@ String openlog_data;
 // ------------------------------------------------------------- SETUP ----------------------------------------------------------------------//
 void setup() {
   // ゴール設定
-  cansat.setGoal(35.554970, 139.656025);
+//  cansat.setGoal(35.554965, 139.656048); // 手前
+//  cansat.setGoal(35.554812, 139.656548); // 中央
+  cansat.setGoal(35.554648, 139.656900); // 奥
+//  cansat.setGoal(35.554594, 139.657295); // 奥の草むら
 
   // Serial通信開始
   Serial.begin(9600); Serial.println(F("Begin!"));
@@ -83,7 +86,7 @@ void loop() {
     cansat.radio.lastState = cansat.radio.stateData;
   }
   Serial.print(F("State Received From XBee:                      ")); Serial.println(cansat.radio.stateData);
-  
+
 
   // cansatの状態(State)に応じて処理を変更
   cansat.openlog.saveErrorOnSD("State: "); cansat.openlog.saveErrorOnSD(String(cansat._state));
