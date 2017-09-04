@@ -46,6 +46,7 @@ public:
   void releasing();
   void stucking();
   void goal();
+  void mission();
   void guidance(float lat, float lon, float deg, float goalLat, float goalLon);
 
   void judgeStucking();

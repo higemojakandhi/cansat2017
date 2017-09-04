@@ -81,11 +81,11 @@ void loop() {
     cansat.switchStateTo((int) inputState - 48);
   }
 
-  cansat.radio.getData();
-  if(cansat.radio.lastState!=cansat.radio.stateData){
-    cansat.switchStateTo(cansat.radio.stateData);
-    cansat.radio.lastState = cansat.radio.stateData;
-  }
+  // cansat.radio.getData();
+  // if(cansat.radio.lastState!=cansat.radio.stateData){
+  //   cansat.switchStateTo(cansat.radio.stateData);
+  //   cansat.radio.lastState = cansat.radio.stateData;
+  // }
 
   // cansatの状態(State)に応じて処理を変更
   cansat.openlog.saveErrorOnSD("State: "+String(cansat._state)); // cansat.openlog.saveErrorOnSD(String(cansat._state));
@@ -117,6 +117,9 @@ void loop() {
       case GOAL: // 7
         cansat.goal();
         break;
+      case MISSION: // 8
+        cansat.radio.getData();
+        cansat.mission();
       case STANDBY: //10
         cansat.rightMotor.stop();
         cansat.leftMotor.stop();

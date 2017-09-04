@@ -425,6 +425,40 @@ void Cansat::goal() { //State: 7
   analogWrite(PIN_LED_RED, 0); delay(100);
 }
 
+void Cansat::mission(){
+  if (gps._lat < 1 && gps._lon < 1) {
+    leftMotor.stop();
+    rightMotor.stop();
+  } else {
+    if(radio.moduleData1 >= radio.moduleData2){
+      if(_running_state==1){
+        guidance(gps._lat, gps._lon, nineaxis.deg, sub_goal1_lat, sub_goal1_lon);
+        if (fabs(sub_goal1_lat - gps._lat) * 100000 <= GOAL_THRE && fabs(sub_goal1_lon - gps._lon) * 100000 <= GOAL_THRE){
+          leftMotor.stopSlowly();
+          rightMotor.stopSlowly();
+          _running_state++;
+        }
+      }else{
+        if (fabs(_destLat - gps._lat) * 100000 <= GOAL_THRE && fabs(_destLon - gps._lon) * 100000 <= GOAL_THRE){
+          _state = GOAL;
+        }
+      }
+    }else{
+      if(_running_state==1){
+        guidance(gps._lat, gps._lon, nineaxis.deg, sub_goal2_lat, sub_goal2_lon);
+        if (fabs(sub_goal2_lat - gps._lat) * 100000 <= GOAL_THRE && fabs(sub_goal2_lon - gps._lon) * 100000 <= GOAL_THRE){
+          leftMotor.stopSlowly();
+          rightMotor.stopSlowly();
+          _running_state++;
+        }
+      }else{
+        if (fabs(_destLat - gps._lat) * 100000 <= GOAL_THRE && fabs(_destLon - gps._lon) * 100000 <= GOAL_THRE){
+          _state = GOAL;
+        }
+      }
+    }
+  }
+}
 
 /**
 * @func switchStateTo()

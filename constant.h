@@ -31,6 +31,7 @@
 #define RELEASING 5   // XBEE 分離
 #define STUCKING 6    // スタック中
 #define GOAL 7        // ゴール
+#define MISSION 8     // ミッション
 #define STANDBY 10    // デバッグ用にステート移行しないように停止
 
 // THRESHOLD
