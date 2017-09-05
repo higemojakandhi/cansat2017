@@ -26,7 +26,7 @@ void Radio::getData() {
     if (xbee.getResponse().getApiId() == ZB_EXPLICIT_RX_RESPONSE) {
       xbee.getResponse().getZBRxResponse(rx);
       
-      if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xF6) {
+      if ((xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xF6 && xbee.getResponse().getFrameData()[6] == 0x37) || (xbee.getResponse().getFrameData()[4] == 0x41 && xbee.getResponse().getFrameData()[5] == 0x54 && xbee.getResponse().getFrameData()[6] == 0xCB)) {
         for (int i = 0; i < rx.getDataLength(); i++) {
           if (i == 10) {
             data1 = String(rx.getData()[i], DEC);
@@ -40,7 +40,7 @@ void Radio::getData() {
         moduleData1 = intData1 * 256 + intData2;
        } 
        
-      else if (xbee.getResponse().getFrameData()[4] == 0x41 && xbee.getResponse().getFrameData()[5] == 0x54) {
+      else if ((xbee.getResponse().getFrameData()[4] == 0x41 && xbee.getResponse().getFrameData()[5] == 0x54 && xbee.getResponse().getFrameData()[6] == 0x11) || (xbee.getResponse().getFrameData()[4] == 0x41 && xbee.getResponse().getFrameData()[5] == 0x05 && xbee.getResponse().getFrameData()[6] == 0x6E)) {
         for (int i = 0; i < rx.getDataLength(); i++) {
           if (i == 10) {
             data1 = String(rx.getData()[i], DEC);
@@ -54,7 +54,7 @@ void Radio::getData() {
         moduleData2 = intData1 * 256 + intData2;
       }
       
-      else if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xE7) {
+      else if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xE7 && xbee.getResponse().getFrameData()[6] == 0xED) {
         for (int i = 0; i < rx.getDataLength(); i++) {
           receiveString = String(rx.getData()[i], DEC);
           intData = receiveString.toInt();
