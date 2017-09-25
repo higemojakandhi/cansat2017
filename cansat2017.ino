@@ -1,3 +1,5 @@
+
+
 /**
   @file cansat2017.ino
   @brief CanSat Project 2017
@@ -10,20 +12,25 @@
 #include <HardwareSerial.h>
 #include "constant.h" //全ての定数はここ
 #include "cansat.h"
-HardwareSerial & SerialGps = Serial1;// Change the name of Serial from Serial1 -> SerialGps
+HardwareSerial & SerialGps = Serial1;     // Change the name of Serial from Serial1 -> SerialGps
 HardwareSerial & SerialOpenLog = Serial2; // Change the name of Serial from Serial2 -> SerialOpenlog
-HardwareSerial & SerialRadio = Serial3; // Change the name of Serial from Serial3 -> SerialRadio
+HardwareSerial & SerialRadio = Serial3;   // Change the name of Serial from Serial3 -> SerialRadio
 
 // cansatオブジェクト生成
 Cansat cansat;
-String dataHeader = "Time[ms], State, Light, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyroZ, magX, magY, magZ, Pitch, Roll, Yaw, Deg";
+String dataHeader = "Time, Time[ms], State, Light, alt, Lat, Lon, accX, accY, accZ, gyroX, gyroY, gyroZ, magX, magY, magZ, Deg";
 String xbee_data;
 String openlog_data;
 
 // ------------------------------------------------------------- SETUP ----------------------------------------------------------------------//
 void setup() {
   // ゴール設定
-  cansat.setGoal(35.554970, 139.656025);
+//  cansat.setGoal(35.554965, 139.656048); // 手前
+//  cansat.setGoal(35.554812, 139.656548); // 中央
+//  cansat.setGoal(35.554648, 139.656900); // 奥
+//  cansat.setGoal(35.554594, 139.657295); // 奥の草むら
+//  cansat.setGoal(40.646705, -119.348938); // Brunoから南東に離れたところ
+  cansat.setGoal(40.879740, -119.121820); // ARLISS 目標座標
 
   // Serial通信開始
   Serial.begin(9600); Serial.println(F("Begin!"));
@@ -35,6 +42,7 @@ void setup() {
   cansat.gps.setSerial(&SerialGps);
   cansat.radio.setSerial(&SerialRadio);
   cansat.openlog.setSerial(&SerialOpenLog);
+  cansat.nineaxis.setSerial(&SerialOpenLog);
 
   // OpenLogに保存するヘッダー渡す
   cansat.openlog.setHeader(&dataHeader);
@@ -59,15 +67,17 @@ void setup() {
 // ------------------------------------------------------------- LOOP ----------------------------------------------------------------------//
 void loop() {
   cansat.openlog.openErrorFile();
-  // それぞれのセンサーにOpenLogを渡し，errorメッセージを記録
+  Serial.print(F("millis: ")); Serial.println(millis());
+  cansat.openlog.saveErrorOnSD("millis: "+String(millis()));
 
   // 位置が取れない場合どうする？ -> 位置推定出来るほど正確なセンサーとモータではないので諦める．
-  cansat.openlog.saveErrorOnSD("Reading GPS Value ...");
+  cansat.openlog.saveErrorOnSD("GPS");
   cansat.gps.readGpsValue();
 
   // 9軸が取れない場合はどうする？ flag渡して9軸が不可ならgpsのlat/lon/speed/degから計算
-  cansat.openlog.saveErrorOnSD("Reading 9 Axis Value ...");
-  cansat.nineaxis.readNineAxisValue();
+  cansat.openlog.saveErrorOnSD("9Axis");
+//  if(cansat._state!=RUNNING){ cansat.nineaxis.readNineAxisValue(); }
+//  cansat.nineaxis.readNineAxisValue();
 
   // 手動でcansatの状態を切り替える．
   if(Serial.available()>0){
@@ -77,17 +87,9 @@ void loop() {
     cansat.switchStateTo((int) inputState - 48);
   }
 
-  cansat.radio.getData();
-  if(cansat.radio.lastState!=cansat.radio.stateData){
-    cansat.switchStateTo(cansat.radio.stateData);
-    cansat.radio.lastState = cansat.radio.stateData;
-  }
-  Serial.print(F("State Received From XBee:                      ")); Serial.println(cansat.radio.stateData);
-  
-
   // cansatの状態(State)に応じて処理を変更
-  cansat.openlog.saveErrorOnSD("State: "); cansat.openlog.saveErrorOnSD(String(cansat._state));
-  Serial.print(F("State: ")); Serial.println(cansat._state);
+  cansat.openlog.saveErrorOnSD("State: "+String(cansat._state)); // cansat.openlog.saveErrorOnSD(String(cansat._state));
+  Serial.println("State: "+String(cansat._state));
     switch (cansat._state) {
       case PREPARING: // 0
         cansat.light.readLightValue();
@@ -98,13 +100,13 @@ void loop() {
         cansat.flying();
         break;
       case DROPPING: // 2
-        Serial.println("Dropping...");
         cansat.dropping();
         break;
       case LANDING: // 3
         cansat.landing();
         break;
       case RUNNING: // 4
+        cansat.radio.getData();
         cansat.running();
         break;
       case RELEASING: // 5
@@ -116,12 +118,15 @@ void loop() {
       case GOAL: // 7
         cansat.goal();
         break;
+      case MISSION: // 8
+        cansat.radio.getData();
+        cansat.mission();
       case STANDBY: //10
-        cansat.rightMotor.stop();
-        cansat.leftMotor.stop();
-        digitalWrite(PIN_RELEASING, LOW);
-        digitalWrite(PIN_RELEASING_XBEE1, LOW);
-        digitalWrite(PIN_RELEASING_XBEE2, LOW);
+//        cansat.rightMotor.stop();
+//        cansat.leftMotor.stop();
+//        digitalWrite(PIN_RELEASING, LOW);
+//        digitalWrite(PIN_RELEASING_XBEE1, LOW);
+//        digitalWrite(PIN_RELEASING_XBEE2, LOW);
       default:
         break;
     }
@@ -129,18 +134,24 @@ void loop() {
   xbee_data = String(millis()) + ", "
              + String(cansat._state) + ", "
              + String(cansat.light._lightValue) + ", "
-             + String(cansat.gps._lat) + ", "
-             + String(cansat.gps._lon) + ", "
+             + String(cansat.gps._lat*1000000) + ", "
+             + String(cansat.gps._lon*1000000) + ", "
              + String(cansat.gps._alt) + ", "
              + String(cansat.nineaxis.deg_filt) + ", "
-             + String(cansat._direct);
-  Serial.println("Sending Data to Xbee...");
-  cansat.openlog.saveErrorOnSD("Sending Data to Xbee...");
-  if(cansat._state!=FLYING) cansat.radio.send(xbee_data);
-
+             + String(cansat._direct) + ", "
+             + String(cansat._bodyAngle) + ", "
+             + String(cansat._distance) + ", "
+             + String(cansat.radio.moduleData1) + ", "
+             + String(cansat.radio.moduleData2);
+  Serial.println("Xbee");
+  cansat.openlog.saveErrorOnSD("Xbee");
+  //if(cansat._state!=FLYING) cansat.radio.send(xbee_data);
+//  delay(1);
+  
   // 送信用のデータ作成
   // State, millis, lat, lon, alt, light, ax, ay, az
-  openlog_data = String(millis()) + ", "
+  openlog_data =String(cansat.gps._hour+9) + String(cansat.gps._minute) + String(cansat.gps._second) + ", "
+                 + String(millis()) + ", "
                  + String(cansat._state) + ", "
                  + String(cansat.light._lightValue) + ", "
                  + String(cansat.gps._alt) + ", "
@@ -155,12 +166,14 @@ void loop() {
                  + String(cansat.nineaxis.mx) + ", "
                  + String(cansat.nineaxis.my) + ", "
                  + String(cansat.nineaxis.mz) + ", "
-                 + String(cansat.nineaxis.pitch) + ", "
-                 + String(cansat.nineaxis.roll) + ", "
-                 + String(cansat.nineaxis.yaw) + ", "
+                //  + String(cansat.nineaxis.pitch) + ", "
+                //  + String(cansat.nineaxis.roll) + ", "
+                //  + String(cansat.nineaxis.yaw) + ", "
                  + String(cansat.nineaxis.deg_filt);
 
   Serial.println(openlog_data);
+  Serial.println(cansat.radio.moduleData1);
+  Serial.println(cansat.radio.moduleData2);
   // 全て処理が終わったらループの最後にSDにデータの記録
   cansat.openlog.saveDataOnSD(openlog_data);
 }

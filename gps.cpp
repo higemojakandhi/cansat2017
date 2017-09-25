@@ -39,7 +39,7 @@ void Gps::setSerial(HardwareSerial* serial){
 void Gps::readGpsValue(){
   while(_serial->available()>0){
     char c = _serial->read();
-    Serial.print(c);
+//    Serial.print(c);
     tinygps.encode(c);
     if(tinygps.location.isValid()){
       _lon = tinygps.location.lng();
@@ -57,13 +57,16 @@ void Gps::readGpsValue(){
     if(tinygps.course.isValid()){
       _deg = tinygps.course.deg();
     }
-    _alt = tinygps.altitude.meters();
+    if(tinygps.altitude.isValid()){
+      _alt = tinygps.altitude.meters();
+    }else{
+      _alt = 0;
+    }
     _satNum = tinygps.satellites.value();
     _posAccuracy = tinygps.hdop.value();
   }
-  Serial.println(" ");
+//  Serial.println(" ");
 
   if (millis() > 5000 && tinygps.charsProcessed() < 10)
     Serial.println(F("No GPS data received: check wiring"));
 }
-

@@ -44,7 +44,9 @@ public:
   void releasing();
   void stucking();
   void goal();
+  void mission();
   void guidance(float lat, float lon, float deg, float goalLat, float goalLon);
+  void calcGoals();
 
   void judgeStucking();
 
@@ -52,8 +54,10 @@ public:
   void switchStateTo(int state);
 
   // Variables to save
-  int _state=0;
-  int _running_state=1;
+  int _state=8;
+  int _running_state=1; //------------------------- ここもチェック
+  int curr_state=0;
+  unsigned long light_count=0;
   unsigned long _startPreparingTime=0;
   unsigned long _startFlyingTime=0;
   unsigned long _startDroppingTime=0;
@@ -69,10 +73,10 @@ public:
   float _destLat=0;
   float _destLon=0;
   float _distance=0;
-  float sub_goal1_lat=0;
-  float sub_goal1_lon=0;
-  float sub_goal2_lat=0;
-  float sub_goal2_lon=0;
+  float sub_goal1_lat=40.652404;
+  float sub_goal1_lon=-119.352340;
+  float sub_goal2_lat=40.651968;
+  float sub_goal2_lon=-119.353400;
 
   int _flagLandingTime=0;
   int _flagXBeeReleasingNum=1;
@@ -81,8 +85,8 @@ public:
   int _countFlyLightLoop=0;
   int _countDrop2LandLoop=0;
   int _countDrop2LandGPSLoop=0;
-  int _preAltSavedTime=0;
-  float _preAlt=0;
+  unsigned long _lastAltSavedTime=0;
+  float _lastAlt=0;
 
   HardwareSerial* _serialOpenLog;
   int _direct=0;

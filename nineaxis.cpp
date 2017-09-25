@@ -12,6 +12,10 @@ NineAxis::NineAxis(int pinInterrupt){
 NineAxis::~NineAxis(){
 }
 
+void NineAxis::setSerial(HardwareSerial* serial) {
+  _serialOpenLog = serial;
+}
+
 void NineAxis::init(){
   Wire.begin();
 
@@ -102,20 +106,25 @@ void NineAxis::init(){
 }
 
 void NineAxis::readNineAxisValue(){
+  _debug_openlog=true;
   // If intPin goes high, all data registers have new data
   if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {  // On interrupt, check if data ready interrupt
+    _serialOpenLog->println("readAccelData");
     readAccelData(accelCount);  // Read the x/y/z adc values
     // Now we'll calculate the accleration value into actual g's
+    _serialOpenLog->println("Actual G Value");
     ax = (float)accelCount[0]*aRes; // - accelBias[0];  // get actual g value, this depends on scale being set
     ay = (float)accelCount[1]*aRes; // - accelBias[1];
     az = (float)accelCount[2]*aRes; // - accelBias[2];
 
+    _serialOpenLog->println("readGyroData");
     readGyroData(gyroCount);  // Read the x/y/z adc values
     // Calculate the gyro value into actual degrees per second
     gx = (float)gyroCount[0]*gRes;  // get actual gyro value, this depends on scale being set
     gy = (float)gyroCount[1]*gRes;
     gz = (float)gyroCount[2]*gRes;
 
+    _serialOpenLog->println("readMagData");
     readMagData(magCount);  // Read the x/y/z adc values
     //    magbias[0] = +1466.61;  // User environmental x-axis correction in milliGauss, should be automatically calculated
     //    magbias[1] = +2559.81;  // User environmental x-axis correction in milliGauss
@@ -127,66 +136,16 @@ void NineAxis::readNineAxisValue(){
     my = (float)magCount[1]*mRes*magCalibration[1] - magBias[1];
     mz = (float)magCount[2]*mRes*magCalibration[2] - magBias[2];
 
-    // Declination of 7.39 Degrees from True "North Pole" @矢上
-    deg = atan2(my,mx)*180/PI - 7.39;
+    _serialOpenLog->println("calcDeg");
+    deg = atan2(my,mx)*180/PI + 13.59;
     if(deg>180){
       deg -= 360;
     }
     // 1次フィルタ
+    _serialOpenLog->println("1stOrder");
     deg_filt = alpha*deg_filt + (1-alpha)*deg;
   }
-
-  Now = micros();
-  deltat = ((Now - lastUpdate)/1000000.0f); // set integration time by time elapsed since last filter update
-  lastUpdate = Now;
-
-  sum += deltat; // sum for averaging filter update rate
-  sumCount++;
-
-  // Sensors x (y)-axis of the accelerometer is aligned with the y (x)-axis of the magnetometer;
-  // the magnetometer z-axis (+ down) is opposite to z-axis (+ up) of accelerometer and gyro!
-  // We have to make some allowance for this orientationmismatch in feeding the output to the quaternion filter.
-  // For the MPU-9250, we have chosen a magnetic rotation that keeps the sensor forward along the x-axis just like
-  // in the LSM9DS0 sensor. This rotation can be modified to allow any convenient orientation convention.
-  // This is ok by aircraft orientation standards!
-  // Pass gyro rate as rad/s
-  // MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f,  my,  mx, mz);
-  //  MahonyQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f, my, mx, mz);
-
-  if (!AHRS) {
-    delt_t = millis() - count;
-    if(delt_t > 500) {
-      count = millis();
-    }
-  }else{
-    // Serial print and/or display at 0.5 s rate independent of data rates
-    delt_t = millis() - count;
-    if (delt_t > 50) { // update LCD once per half-second independent of read rate
-      // Z軸は下方向 (航空機の座標と同じ)
-      yaw   = atan2(2.0f * (q[1] * q[2] + q[0] * q[3]), q[0] * q[0] + q[1] * q[1] - q[2] * q[2] - q[3] * q[3]);
-      pitch = -asin(2.0f * (q[1] * q[3] - q[0] * q[2]));
-      roll  = atan2(2.0f * (q[0] * q[1] + q[2] * q[3]), q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3]);
-      pitch *= 180.0f / PI;
-      yaw   *= 180.0f / PI;
-      roll  *= 180.0f / PI;
-      // yaw   -= 13.8; // Declination at Danville, California is 13 degrees 48 minutes and 47 seconds on 2014-04-04
-      // yaw   += 1.34; // Declination at Potheri, Chennail ,India  Model Used:	IGRF12	Help
-       /*
-      Latitude:	12.823640° N
-      Longitude:	80.043518° E
-      Date	Declination
-      2016-04-09	1.34° W  changing by  0.06° E per year (+ve for west )
-      */
-     yaw += 7.39; // 矢上キャンパス
-
-      tempCount = readTempData();  // Read the adc values
-      temperature = ((float) tempCount) / 333.87 + 21.0; // Temperature in degrees Centigrade
-
-      count = millis();
-      sumCount = 0;
-      sum = 0;
-    }
-  }
+    _debug_openlog=false;
 }
 
 //===================================================================================================================
@@ -253,6 +212,7 @@ void NineAxis::getAres() {
 void NineAxis::readAccelData(int16_t * destination)
 {
   uint8_t rawData[6];  // x/y/z accel register data stored here
+  _serialOpenLog->println("readBytes");
   readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, &rawData[0]);  // Read the six raw data registers into data array
   destination[0] = ((int16_t)rawData[0] << 8) | rawData[1] ;  // Turn the MSB and LSB into a signed 16-bit value
   destination[1] = ((int16_t)rawData[2] << 8) | rawData[3] ;
@@ -263,6 +223,7 @@ void NineAxis::readAccelData(int16_t * destination)
 void NineAxis::readGyroData(int16_t * destination)
 {
   uint8_t rawData[6];  // x/y/z gyro register data stored here
+  _serialOpenLog->println("readBytes");
   readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, &rawData[0]);  // Read the six raw data registers sequentially into data array
   destination[0] = ((int16_t)rawData[0] << 8) | rawData[1] ;  // Turn the MSB and LSB into a signed 16-bit value
   destination[1] = ((int16_t)rawData[2] << 8) | rawData[3] ;
@@ -752,12 +713,19 @@ uint8_t NineAxis::readByte(uint8_t address, uint8_t subAddress){
 }
 
 void NineAxis::readBytes(uint8_t address, uint8_t subAddress, uint8_t count, uint8_t * dest){
+  if(_debug_openlog){ _serialOpenLog->println("BeginTrans"); }
   Wire.beginTransmission(address);   // Initialize the Tx buffer
+  if(_debug_openlog){ _serialOpenLog->println("subAddress"); }
   Wire.write(subAddress);            // Put slave register address in Tx buffer
+  if(_debug_openlog){ _serialOpenLog->println("endTrans"); }
   Wire.endTransmission(false);       // Send the Tx buffer, but send a restart to keep connection alive
   uint8_t i = 0;
+  if(_debug_openlog){ _serialOpenLog->println("requestFrom");}
   Wire.requestFrom(address, count);  // Read bytes from slave register address
+  if(_debug_openlog){ _serialOpenLog->println("checkWireAvailable"); }
   while (Wire.available()) {
+    if(_debug_openlog){ _serialOpenLog->println("WireAvailable"); }
     dest[i++] = Wire.read();
+    if(_debug_openlog){ _serialOpenLog->println(int(dest)); }
   }         // Put read results in the Rx buffer
 }

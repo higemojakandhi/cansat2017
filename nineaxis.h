@@ -10,7 +10,8 @@
 #include <string.h>
 #include "Arduino.h"
 #include <SPI.h>
-#include <Wire.h>
+#include <WSWire.h>
+
 #include "constant.h"
 
 // See also MPU-9250 Register Map and Descriptions, Revision 4.0, RM-MPU-9250A-00, Rev. 1.4, 9/9/2013 for registers not listed in
@@ -208,6 +209,7 @@ public:
   void readBytes(uint8_t address, uint8_t subAddress, uint8_t count, uint8_t * dest);
   uint8_t readByte(uint8_t address, uint8_t subAddress);
   void readNineAxisValue();
+  void setSerial(HardwareSerial* serial);
 
   // Specify sensor full scale
   uint8_t Gscale = GFS_250DPS;
@@ -240,7 +242,7 @@ public:
   uint32_t Now = 0;        // used to calculate integration interval
 
   float deg_filt;
-  #define alpha 0.7
+  #define alpha 0.4
 
   float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values
   float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
@@ -248,7 +250,10 @@ public:
 
   float magBias[3],magScale[3];
 
+  HardwareSerial* _serialOpenLog;
   int _pinInterrupt;
+  bool _debug_openlog=false;
+
 };
 
 #endif

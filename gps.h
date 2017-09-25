@@ -30,7 +30,6 @@ public:
   float _alt;
   short _satNum;
   float _posAccuracy;
-  String _time;
 };
 
 #endif

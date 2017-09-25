@@ -21,15 +21,18 @@ Motor::~Motor() {
 void Motor::setSpeedAt(int v) {
   // 正転・逆転どっちか
   if (v < 0) v = 0;
-  if (v > 255) v = 0;
+  if (v > 255) v = 255;
   _velocity = v;
   analogWrite(_pinMotorFin, v);
   digitalWrite(_pinMotorRin, LOW);
+  Serial.print("Motor Speed: "); Serial.println(_velocity);
+
 }
 
 void Motor::goBack(int v) {
   if (v < 0) v = 0;
-  if (v > 255) v = 0;
+  if (v > 255) v = 255;
+  _velocity=v;
   digitalWrite(_pinMotorFin, LOW);
   analogWrite(_pinMotorRin, v);
 }
@@ -46,6 +49,7 @@ void Motor::stopSlowly() {
   }
   digitalWrite(_pinMotorFin, LOW);
   digitalWrite(_pinMotorRin, LOW);
+  Serial.print("Motor Speed: "); Serial.println(_velocity);
 }
 
 void Motor::stop() {
@@ -53,6 +57,7 @@ void Motor::stop() {
   breaking();
   digitalWrite(_pinMotorFin, LOW);
   digitalWrite(_pinMotorRin, LOW);
+  Serial.print("Motor Speed: "); Serial.println(_velocity);
 }
 
 void Motor::breaking() {

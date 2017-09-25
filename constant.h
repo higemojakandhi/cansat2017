@@ -31,26 +31,32 @@
 #define RELEASING 5   // XBEE 分離
 #define STUCKING 6    // スタック中
 #define GOAL 7        // ゴール
+#define MISSION 8     // ミッション
 #define STANDBY 10    // デバッグ用にステート移行しないように停止
 
 // THRESHOLD
 // preparing()
 #define PRE2FLY_THRE 100              // キャリア格納判定用　（光センサの閾値）
-#define COUNT_PRE2FLY_LOOP_THRE 100   // キャリア格納判定用  (閾値以下の値になる連続の回数の閾値
+#define COUNT_PRE2FLY_LOOP_THRE 240   // キャリア格納判定用  (閾値以下の値になる連続の回数の閾値 (OpenLogでエラーファイルも作成する場 合)
+// #define COUNT_PRE2FLY_LOOP_THRE 100   // キャリア格納判定用  (閾値以下の値になる連続の回数の閾値
 // flying()
 #define FLY2DROP_THRE 100             // 放出判定用　　　　　（光センサの閾値）
-#define COUNT_FLY2DROP_LOOP_THRE 100  // 放出判定用          (閾値以上の値になる連続の回数の閾値
+#define COUNT_FLY2DROP_LOOP_THRE 30  // 放出判定用          (閾値以上の値になる連続の回数の閾値 (OpenLogでエラーファイルも作成する場合)
+// #define COUNT_FLY2DROP_LOOP_THRE 100  // 放出判定用          (閾値以上の値になる連続の回数の閾値
 // dropping()
+  // 加速度の衝撃
+#define ACCEL_SHOCK_THRE 6  // ------------------------------------------------------------------------------------------ 後でチェック
   // 加速度
-#define ACCEL_THRE  1.2               // 加速度の閾値
-#define GYRO_THRE   10                // ジャイロの閾値
-#define COUNT_DROP2LAND_LOOP_THRE 100 // 着地検知用          (ジャイロ・加速度の連続の回数の閾値
+#define ACCEL_THRE  1.17               // 加速度の閾値
+#define GYRO_THRE   40                // ジャイロの閾値
+#define COUNT_DROP2LAND_LOOP_THRE 50 // 着地検知用          (ジャイロ・加速度の連続の回数の閾値 (OpenLogでエラーファイルも作成する場合)
+// #define COUNT_DROP2LAND_LOOP_THRE 100 // 着地検知用          (ジャイロ・加速度の連続の回数の閾値
   // 高度
-#define ALT_THRE    5                       // 10秒間でGPSの高度が5m変化しないかどうかの閾値
-#define COUNT_DROP2LAND_GPS_LOOP_THRE 5     // 着地検知用        (10秒間でGPSの高度が5m変化していないループ回数の閾値)
-#define BETWEEN_NOW_AND_PRE_ALT_TIME 240000 // 前回GPSの高度を保存した時刻と今の時刻との差の閾値
+#define ALT_THRE    10                      // ALT_TIME_THRE秒間でGPSの高度がALT_THRE[m]変化しないかどうかの閾値
+#define COUNT_DROP2LAND_GPS_LOOP_THRE 36    // 着地検知用        (10秒間でGPSの高度が5m変化していないループ回数の閾値)
+#define ALT_TIME_THRE   20000               // 前回GPSの高度を保存した時刻と今の時刻との差の閾値
   // 冗長系
-#define LANDING_TIME_THRE 180000      // 着地検知の冗長系：時間でシークエンス移行
+#define LANDING_TIME_THRE 1400000      // 着地検知の冗長系：時間でシークエンス移行  
 // landing()
 #define RELEASING_TIME_THRE 17000     // 分離時間
 // running()
@@ -58,6 +64,7 @@
 // guidance()
 #define ANGLE_THRE 20   // 目的地が角度以下なら真っ直ぐ進む
 // judgeStucking()
-#define STUCKING_JUDGE_TIME_THRE 5000 // スタック検知する間隔
+#define COUNT_RUNNING2JUDGING_LOOP_THRE 30
+#define STUCKING_JUDGE_TIME_THRE 75000 // スタック検知する間隔
 
 #endif

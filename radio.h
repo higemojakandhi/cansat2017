@@ -30,10 +30,13 @@ class Radio {
     int moduleData1;
     int moduleData2;
     int stateData;
-    int lastState;
+    int lastState;                                                                                                                                                                                                                                                                     ;
 
     XBee xbee = XBee();
     HardwareSerial* _serial;
+    XBeeResponse response = XBeeResponse();
+    ZBRxResponse rx = ZBRxResponse();
+
 };
 
 #endif

@@ -54,12 +54,16 @@ void OpenLog::reset(){
 void OpenLog::openErrorFile(){
   if(DEBUG_OPENLOG){
     gotoCommandMode();
+    Serial.println("openError: appendFile");
     appendFile(_errorFile);
   }
 }
 
 void OpenLog::saveErrorOnSD(String error){
-  if(DEBUG_OPENLOG) _serial->println(error);
+  if(DEBUG_OPENLOG){
+    _serial->println(error);
+    delay(20);
+  }
 }
 
 void OpenLog::saveDataOnSD(String alldata){
@@ -69,7 +73,7 @@ void OpenLog::saveDataOnSD(String alldata){
     //OpenLog is now waiting for characters and will record them to the new file
   }
   _serial->println(alldata);
-  delay(200);
+  delay(50);
 }
 
 void OpenLog::createFile(char *fileName) {
@@ -92,6 +96,7 @@ void OpenLog::appendFile(char *fileName){
   _serial->print("append ");
   _serial->print(fileName);
   _serial->write(13); //This is \r
+  Serial.println("appendFile: waitLog");
   waitUntilReady2Log();
   //OpenLog is now waiting for characters and will record them to the new file
 }
@@ -101,10 +106,16 @@ void OpenLog::waitUntilReady2Log(){
   int i=0;
   while(1){
     if(_serial->available()){
-      if(_serial->read() == '<')  break;
-      _connected=true;
+      if(_serial->read() == '<'){
+//        Serial.print("Log Loop: "); Serial.println(i);
+        break;
+      }
     }else{
-      if(i==200) reset(); Serial.println(F("OpenLog Reset"));
+      if(i>30000){
+        Serial.println("Not connected....................................");
+        _isConnected=false;
+        break;
+      }
     }
     i++;
   }
@@ -115,10 +126,16 @@ void OpenLog::waitUntilReady2ReceiveCommand(){
   int i=0;
   while(1) {
     if(_serial->available()){
-      if(_serial->read() == '>') break;
-      _connected=true;
+      if(_serial->read() == '>') {
+//        Serial.print("Command Loop: "); Serial.println(i);
+        break;
+      }
     }else{
-      if(i==200) reset(); Serial.println(F("OpenLog Reset"));
+      if(i>30000){
+        Serial.println("OpenLog Reset.....................................");
+        reset();
+        break;
+      }
     }
     i++;
   }
@@ -144,6 +161,7 @@ bool OpenLog::isExist(char *fileName){
   while(1){
     if(_serial->available()){
       char c = _serial->read();
+      Serial.print(c);
       if(c == '\r') break;
     }
   }
@@ -151,6 +169,7 @@ bool OpenLog::isExist(char *fileName){
   while(1){
     while(_serial->available()){
       char c = _serial->read();
+      Serial.print(c);
       // ファイルが使われていない場合は-1が返ってくるので - で判定
       if(c == '-') return false;
       // それ以外は使われているということ

@@ -19,49 +19,39 @@ void Radio::setSerial(HardwareSerial *serial) {
 }
 
 void Radio::getData() {
-  XBeeResponse response = XBeeResponse();
-  ZBRxResponse rx = ZBRxResponse();
   xbee.readPacket();
   if (xbee.getResponse().isAvailable()) {
-    if (xbee.getResponse().getApiId() == ZB_EXPLICIT_RX_RESPONSE) {
-      xbee.getResponse().getZBRxResponse(rx);
-
-      if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xF6) {
+    if (xbee.getResponse().getApiId() == ZB_IO_SAMPLE_RESPONSE) {
+      xbee.getResponse().getZBRxIoSampleResponse(rx);
+      if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xD7) {
         for (int i = 0; i < rx.getDataLength(); i++) {
-          if (i == 10) {
+          if (i == 4) {
             data1 = String(rx.getData()[i], DEC);
           }
-          if (i == 11) {
+          if (i == 5) {
             data2 = String(rx.getData()[i], DEC);
           }
         }
         intData1 = data1.toInt();
         intData2 = data2.toInt();
         moduleData1 = intData1 * 256 + intData2;
-      }
-
-      else if (xbee.getResponse().getFrameData()[4] == 0x41 && xbee.getResponse().getFrameData()[5] == 0x54) {
+        Serial.print("module1:   ");
+        Serial.println(moduleData1);
+        
+      }else if  (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xF6) {
         for (int i = 0; i < rx.getDataLength(); i++) {
-          if (i == 10) {
+          if (i == 4) {
             data1 = String(rx.getData()[i], DEC);
           }
-          if (i == 11) {
+          if (i == 5) {
             data2 = String(rx.getData()[i], DEC);
           }
         }
         intData1 = data1.toInt();
         intData2 = data2.toInt();
         moduleData2 = intData1 * 256 + intData2;
-      }
-
-      else if (xbee.getResponse().getFrameData()[4] == 0x40 && xbee.getResponse().getFrameData()[5] == 0xE7) {
-        for (int i = 0; i < rx.getDataLength(); i++) {
-          receiveString = String(rx.getData()[i], DEC);
-          intData = receiveString.toInt();
-          if (intData <= 57 && intData >= 48) {
-            stateData = intData - 48;
-          }
-        }
+        Serial.print("module2:   ");
+        Serial.println(moduleData2);
       }
     }
   }
